@@ -1,6 +1,6 @@
 # Hardware verification and external artifacts
 
-Current repository identity is [CIRNETLAB/CIRNET-Hardware](https://github.com/CIRNETLAB/CIRNET-Hardware); local `net-Circuit-*` directory names and dated extraction/provenance records remain valid. Current-source CI requires reviewed renamed Contracts and matching rebuilt Simulator wheel URLs and SHA256 values. Keep immutable v0.1.1 source/tag/artifact provenance separate from candidates rebuilt after documentation or package metadata changes.
+Current repository identity is [CIRNETLAB/CIRNET-Hardware](https://github.com/CIRNETLAB/CIRNET-Hardware); local `net-Circuit-*` directory names and dated extraction/provenance records remain valid. Current-source CI builds the renamed Contracts and matching Simulator wheels from the exact Git commits and SHA256 source archives in `integration/ci-source-dependencies.json`. Keep immutable v0.1.1 source/tag/artifact provenance separate from candidates rebuilt after documentation or package metadata changes.
 
 Create logs, raw JSON, screenshots, traces, exports, environments and diagnostic output outside every checkout, worktree and Git administration directory from the start. Only Markdown verification evidence belongs in this repository. Preserve approved source assets, fixtures, historical evidence and licenses. Build caches/egg-info are compilation outputs, not diagnostic evidence; do not package them.
 

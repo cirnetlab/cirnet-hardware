@@ -9,11 +9,6 @@ env:
   PYTHONDONTWRITEBYTECODE: '1'
   NETCIRCUIT_CONTRACTS_DEV_WHEEL_URL: ${{ vars.NETCIRCUIT_CONTRACTS_DEV_WHEEL_URL }}
   NETCIRCUIT_CONTRACTS_DEV_WHEEL_SHA256: ${{ vars.NETCIRCUIT_CONTRACTS_DEV_WHEEL_SHA256 }}
-  NETCIRCUIT_CONTRACTS_WHEEL_URL: ${{ vars.NETCIRCUIT_CONTRACTS_WHEEL_URL }}
-  NETCIRCUIT_CONTRACTS_WHEEL_SHA256: ${{ vars.NETCIRCUIT_CONTRACTS_WHEEL_SHA256 }}
-  NETCIRCUIT_SIMULATOR_WHEEL_FILENAME: netcircuit_simulator-0.1.1-py3-none-any.whl
-  NETCIRCUIT_SIMULATOR_WHEEL_URL: ${{ vars.NETCIRCUIT_SIMULATOR_WHEEL_URL }}
-  NETCIRCUIT_SIMULATOR_WHEEL_SHA256: ${{ vars.NETCIRCUIT_SIMULATOR_WHEEL_SHA256 }}
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -42,14 +37,15 @@ jobs:
             echo "PYTHONDONTWRITEBYTECODE=1"
             echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)"
           } >> "$GITHUB_ENV"
-      - name: Install the locked closure and reviewed dependency wheels
-        env:
-          NETCIRCUIT_ARTIFACTS_TOKEN: ${{ secrets.NETCIRCUIT_ARTIFACTS_READ_TOKEN }}
+      - name: Install the locked closure and build pinned dependency wheels
         run: |
           python -m pip download --require-hashes --only-binary=:all: -r requirements-verification.lock --dest "$NETCIRCUIT_ARTIFACTS_SESSION/hw-leaf-wheelhouse"
           python -m pip install --require-hashes --only-binary=:all: --no-index --find-links "$NETCIRCUIT_ARTIFACTS_SESSION/hw-leaf-wheelhouse" -r requirements-verification.lock
-          python scripts/install_contracts.py
-          python scripts/install_simulator.py
+          contracts_manifest="$(python -B scripts/build_ci_dependency.py Contracts)"
+          simulator_manifest="$(python -B scripts/build_ci_dependency.py Simulator)"
+          python scripts/install_contracts.py --manifest "$contracts_manifest"
+          python scripts/install_simulator.py --manifest "$simulator_manifest"
+          echo "NETCIRCUIT_CONTRACTS_ARTIFACT_MANIFEST=$contracts_manifest" >> "$GITHUB_ENV"
       - name: Build and verify the installed Hardware product
         shell: bash
         run: |
