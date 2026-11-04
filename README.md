@@ -2,7 +2,7 @@
 
 Repository: [CIRNETLAB/CIRNET-Hardware](https://github.com/CIRNETLAB/CIRNET-Hardware). Existing local directories may retain the `net-Circuit-Hardware` name. Python distributions/imports, `NETCIRCUIT_*` settings and protocol identifiers retain their compatible names.
 
-Independent `netcircuit-hardware-service==0.1.1`, Python >=3.11. The `hardware_service` namespace owns local-only Hardware RPC 2.0, virtual/physical stations and private FPGA transport. Runtime consumes exact `netcircuit-contracts==0.1.1` and `netcircuit-simulator==0.1.1` wheels. No API implementation or sibling checkout is needed. Revalidate the existing immutable `v0.1.1` artifacts under the current repository URL while retaining their original source revisions and SHA256. Compare candidates from changed source separately; changed published bytes or tags require an explicit release decision and must respect immutability. Record the selected artifacts and consumer access in the system manifest.
+Independent `netcircuit-hardware-service==0.1.1`, Python >=3.11. The `hardware_service` namespace owns local-only Hardware RPC 2.0, virtual/physical stations and private FPGA transport. Runtime consumes exact `cirnet-contracts==0.1.1` and `netcircuit-simulator==0.1.1` wheels. No API implementation or sibling checkout is needed. Revalidate the existing immutable `v0.1.1` artifacts under the current repository URL while retaining their original source revisions and SHA256. Compare candidates from changed source separately; changed published bytes or tags require an explicit release decision and must respect immutability. Record the selected artifacts and consumer access in the system manifest.
 
 Canonical [Lab-First v3.1 architecture](https://github.com/CIRNETLAB/CIRNET-Remote/blob/0d038c7aed15798696223558b4e58f5ffe926aa9/docs/ARCHITECTURE.md), [physical safety authority](https://github.com/CIRNETLAB/CIRNET-Remote/blob/0d038c7aed15798696223558b4e58f5ffe926aa9/docs/PHYSICAL_LAB_SAFETY.md) and approved M0 remain owned by Remote. The pinned authority revision is unchanged by the repository rename. Safety, topology and correctness are independent. Safe unknown or mismatched components do not become unsafe by identity alone.
 
@@ -13,6 +13,12 @@ Virtual legacy digital execution uses independent per-experiment sessions and bo
 Run the independently installed service with `python -m hardware_service.server`, default `127.0.0.1:50051`. `serve()` permits loopback/localhost or Unix sockets only. The browser never accesses it directly. Bindings come from installed Contracts; this product performs no generation. Genuine bounded digital NCAP is carried in `OperationReply.capture_payload`, separate from metadata-only `result_json`.
 
 ## Build and verify
+
+Build the current source in a fresh environment with reviewed
+`cirnet-contracts==0.1.1` and Simulator wheels built against that dependency.
+The immutable Hardware release keeps its original `netcircuit-contracts==0.1.1`
+dependency and uses a separate environment. Both Contracts distributions install
+the `contracts` namespace.
 
 Use Node 22 and Python 3.12 in CI; Python >=3.11 is supported. Begin with an external Python environment and reviewed Contracts/DEV and Simulator artifact manifests. See [verification policy](docs/VERIFICATION.md). The complete third-party runtime/test/build closure is SHA256 locked in `requirements-verification.lock`; first-party wheels have separately reviewed version/digest manifests. The former `dev` code-generation extra is replaced by `test`: consumer tests import installed RPC bindings and never compile canonical Contracts.
 
@@ -42,7 +48,7 @@ Pop-Location
 node scripts/artifact-paths.mjs --cleanup $env:NETCIRCUIT_ARTIFACTS_SESSION
 ```
 
-CI accepts exact immutable HTTPS artifact URLs plus SHA256 repository variables and optional `NETCIRCUIT_ARTIFACTS_READ_TOKEN`. Configure direct `https://api.github.com/repos/CIRNETLAB/CIRNET-Contracts/releases/assets/<id>` and `CIRNET-Simulator` asset URLs, preserving the selected IDs, filenames and digests. Public published assets support anonymous access; authenticated CI/draft access still uses the selected-repository read token. Only GitHub release-asset API requests receive credentials; redirects do not. Missing pins fail closed. It downloads the locked closure, installs it offline, builds wheel/sdist without PEP 517 network isolation, force-installs the selected Hardware archive, checks version/RECORD/digest/import provenance and runs tests from an external CWD. The pytest prepend mode exposes only test-local helpers for real spawn imports; it does not expose product source. No automatic publication occurs. Hosted CI access and execution are separate evidence.
+CI accepts exact immutable HTTPS artifact URLs plus SHA256 repository variables and optional `NETCIRCUIT_ARTIFACTS_READ_TOKEN`. Set the Contracts and Simulator wheel URL and SHA256 variables to the matching reviewed candidates before running current-source CI. DEV selection remains independently pinned. Public published assets support anonymous access; authenticated CI/draft access still uses the selected-repository read token. Only GitHub release-asset API requests receive credentials; redirects do not. Missing pins fail closed. It downloads the locked closure, installs it offline, builds wheel/sdist without PEP 517 network isolation, force-installs the selected Hardware archive, checks version/RECORD/digest/import provenance and runs tests from an external CWD. The pytest prepend mode exposes only test-local helpers for real spawn imports; it does not expose product source. No automatic publication occurs. Hosted CI access and execution are separate evidence.
 
 The existing immutable [v0.1.1 release](https://github.com/CIRNETLAB/CIRNET-Hardware/releases/tag/v0.1.1) retains its original tag, artifact bytes and source provenance. A build from renamed current-source documentation/metadata is a separate candidate even when its package version is 0.1.1; it must not replace those published bytes or be attributed to the original tag. See [release verification work](docs/M6_RELEASE_WORK.md).
 

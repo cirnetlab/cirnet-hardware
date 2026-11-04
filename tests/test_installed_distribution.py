@@ -10,7 +10,7 @@ import netcircuit_sim
 def test_runtime_imports_are_owned_by_exact_installed_wheels():
     checkout = Path(__file__).resolve().parents[1]
     for name, version, module in [('netcircuit-hardware-service', '0.1.1', hardware_service),
-        ('netcircuit-contracts', '0.1.1', contracts), ('netcircuit-simulator', '0.1.1', netcircuit_sim)]:
+        ('cirnet-contracts', '0.1.1', contracts), ('netcircuit-simulator', '0.1.1', netcircuit_sim)]:
         artifact = distribution(name)
         assert artifact.version == version
         assert artifact.read_text('WHEEL') and artifact.read_text('RECORD')

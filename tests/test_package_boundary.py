@@ -37,6 +37,7 @@ def test_selected_installed_hardware_wheel_and_dependencies_have_provenance():
     assert data['hardware']['version'] == '0.1.1'
     assert data['hardware']['owned_files'] == 9
     assert data['hardware']['selected_files'] == 14
+    assert data['contracts']['name'] == 'cirnet-contracts'
     assert data['contracts']['version'] == '0.1.1'
     assert data['simulator']['version'] == '0.1.1'
 
@@ -45,6 +46,15 @@ def test_product_source_shadowing_is_rejected():
     result = probe(ROOT)
     assert result.returncode != 0
     assert 'shadowed by source' in result.stderr
+
+
+def test_legacy_contracts_distribution_is_rejected(tmp_path):
+    legacy = tmp_path / 'netcircuit_contracts-0.1.1.dist-info'
+    legacy.mkdir()
+    (legacy / 'METADATA').write_text('Name: netcircuit-contracts\nVersion: 0.1.1\n', encoding='utf-8')
+    result = probe(tmp_path)
+    assert result.returncode != 0
+    assert 'shares the contracts import namespace' in result.stderr
 
 
 @pytest.mark.parametrize('change', ['modified', 'unowned'])

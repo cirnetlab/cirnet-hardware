@@ -2,7 +2,7 @@
 import base64
 from email.parser import Parser
 import hashlib
-from importlib.metadata import distribution
+from importlib.metadata import PackageNotFoundError, distribution
 from importlib.resources import files
 import json
 import os
@@ -12,7 +12,20 @@ import subprocess
 from zipfile import ZipFile
 
 VERSION = '0.1.1'
-NAME = 'netcircuit-contracts'
+NAME = 'cirnet-contracts'
+LEGACY_NAME = 'netcircuit-contracts'
+SHARED_NAMESPACE_ERROR = (
+    'Use a fresh virtual environment for cirnet-contracts; the legacy '
+    'netcircuit-contracts distribution shares the contracts import namespace.'
+)
+
+
+def require_new_contracts_environment():
+    try:
+        distribution(LEGACY_NAME)
+    except PackageNotFoundError:
+        return
+    raise ValueError(SHARED_NAMESPACE_ERROR)
 
 
 def verify_wheel(path, digest):
@@ -47,14 +60,20 @@ def selected_wheel(manifest=None):
 
 
 SELECTED_INSTALL_PROBE = r'''
-from importlib.metadata import distribution
+from importlib.metadata import PackageNotFoundError, distribution
 import json
 from pathlib import Path
 import sys
 from zipfile import ZipFile
-wheel,digest=sys.argv[1:]
-artifact=distribution('netcircuit-contracts')
-assert artifact.version=='0.1.1','selected archive version differs from the installation'
+wheel,digest,name,version,legacy_name,collision_error=sys.argv[1:]
+try:
+    distribution(legacy_name)
+except PackageNotFoundError:
+    pass
+else:
+    raise ValueError(collision_error)
+artifact=distribution(name)
+assert artifact.version==version,'selected archive version differs from the installation'
 direct=json.loads(artifact.read_text('direct_url.json') or '{}')
 archive_info=direct.get('archive_info',{})
 actual_digest=archive_info.get('hashes',{}).get('sha256')
@@ -76,13 +95,15 @@ print(json.dumps({'selected_sha256':digest,'selected_files':len(expected)}))
 def verify_selected_install(wheel, digest, *, python=None):
     wheel = verify_wheel(wheel, digest)
     result = subprocess.run([str(python or sys.executable), '-I', '-c', SELECTED_INSTALL_PROBE,
-                             str(wheel), digest.lower()], capture_output=True, text=True)
+                             str(wheel), digest.lower(), NAME, VERSION, LEGACY_NAME, SHARED_NAMESPACE_ERROR],
+                            capture_output=True, text=True)
     if result.returncode:
         raise RuntimeError('Installed payload does not match the selected archive: ' + result.stderr.strip())
     return json.loads(result.stdout)
 
 
 def installed_provenance(*, verify_hashes=True):
+    require_new_contracts_environment()
     import contracts
     artifact = distribution(NAME)
     if artifact.version != VERSION:

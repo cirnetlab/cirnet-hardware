@@ -18,7 +18,7 @@ VERSION = '0.1.1'
 MODULES = ('__init__.py', 'fpga_transport.py', 'models.py', 'rpc.py', 'server.py',
            'station/__init__.py', 'station/base.py', 'station/physical.py', 'station/virtual.py')
 OWNED = {'hardware_service/' + name for name in MODULES}
-DEPENDENCIES = {'netcircuit-contracts==0.1.1', 'netcircuit-simulator==0.1.1',
+DEPENDENCIES = {'cirnet-contracts==0.1.1', 'netcircuit-simulator==0.1.1',
                 'grpcio==1.84.0', 'protobuf==7.36.2', 'jsonschema==4.26.0'}
 
 
