@@ -6,13 +6,18 @@ from importlib.metadata import distribution
 from importlib.resources import files
 import json
 import os
+try:
+    from scripts.environment import getenv, export_environment
+except ModuleNotFoundError:
+    from environment import getenv, export_environment
+
 from pathlib import Path
 import re
 import subprocess
 import sys
 from zipfile import ZipFile
 
-NAME = 'netcircuit-simulator'
+NAME = 'cirnet-simulator'
 VERSION = '0.1.1'
 MODULES = ('__init__.py', 'analog.py', 'backends.py', 'circuit.py', 'dispatch.py', 'engine.py', 'logic.py', 'nets.py', 'waveform.py')
 
@@ -29,7 +34,7 @@ def verify_wheel(path, digest):
         if len(metadata) != 1 or len(names) != len(set(names)):
             raise ValueError('Expected one wheel distribution with unique archive members.')
         value = Parser().parsestr(archive.read(metadata[0]).decode('utf-8'))
-        missing = sorted({'netcircuit_sim/' + module for module in MODULES} - set(names))
+        missing = sorted(({'cirnet_sim/' + module for module in MODULES} | {'netcircuit_sim/__init__.py'}) - set(names))
     if value['Name'] != NAME or value['Version'] != VERSION:
         raise ValueError(f'Expected {NAME}=={VERSION}; got {value["Name"]}=={value["Version"]}.')
     dependencies = [entry.replace(' ', '') for entry in value.get_all('Requires-Dist', []) if ';' not in entry]
@@ -41,9 +46,9 @@ def verify_wheel(path, digest):
 
 
 def selected_wheel_details(manifest=None):
-    selected = manifest or os.environ.get('NETCIRCUIT_SIMULATOR_ARTIFACT_MANIFEST')
+    selected = manifest or getenv('CIRNET_SIMULATOR_ARTIFACT_MANIFEST')
     if not selected:
-        raise ValueError('Set NETCIRCUIT_SIMULATOR_ARTIFACT_MANIFEST to an explicit artifact manifest; no source or latest fallback is allowed.')
+        raise ValueError('Set CIRNET_SIMULATOR_ARTIFACT_MANIFEST to an explicit artifact manifest; no source or latest fallback is allowed.')
     value = json.loads(Path(selected).read_text(encoding='utf-8'))
     if value.get('schemaVersion', 1) != 1:
         raise ValueError('Unsupported Simulator artifact manifest schemaVersion.')
@@ -62,7 +67,7 @@ from pathlib import Path
 import sys
 from zipfile import ZipFile
 wheel,digest=sys.argv[1:]
-artifact=distribution('netcircuit-simulator')
+artifact=distribution('cirnet-simulator')
 assert artifact.version=='0.1.1','selected archive version differs from installation'
 direct=json.loads(artifact.read_text('direct_url.json') or '{}')
 assert 'dir_info' not in direct,'Simulator must not use an editable/source installation'
@@ -71,10 +76,11 @@ actual_digest=info.get('hashes',{}).get('sha256')
 if actual_digest is None and info.get('hash','').startswith('sha256='):
     actual_digest=info['hash'].split('=',1)[1]
 assert actual_digest==digest,'installed direct_url archive digest differs from selected archive'
-root=Path(artifact.locate_file('netcircuit_sim')).resolve()
+root=Path(artifact.locate_file('cirnet_sim')).resolve()
 with ZipFile(wheel) as archive:
-    expected={name for name in archive.namelist() if name.startswith('netcircuit_sim/') and not name.endswith('/')}
-    actual={'netcircuit_sim/'+path.relative_to(root).as_posix() for path in root.rglob('*')
+    expected={name for name in archive.namelist() if name.startswith(('cirnet_sim/','netcircuit_sim/')) and not name.endswith('/')}
+    actual={prefix+'/'+path.relative_to(root.parent/prefix).as_posix()
+            for prefix in ('cirnet_sim','netcircuit_sim') for path in (root.parent/prefix).rglob('*')
             if path.is_file() and '__pycache__' not in path.parts and path.suffix!='.pyc'}
     assert expected==actual,'installed package inventory differs from selected archive'
     for name in expected:
@@ -101,18 +107,22 @@ def installed_provenance(*, verify_hashes=True):
     direct = json.loads(artifact.read_text('direct_url.json') or '{}')
     if 'dir_info' in direct:
         raise ValueError('Simulator must come from a wheel, not an editable/source-directory install.')
-    import netcircuit_sim
-    entry = Path(artifact.locate_file('netcircuit_sim/__init__.py')).resolve()
+    import cirnet_sim
+    entry = Path(artifact.locate_file('cirnet_sim/__init__.py')).resolve()
     root = entry.parent
-    if Path(netcircuit_sim.__file__).resolve() != entry or Path(str(files('netcircuit_sim'))).resolve() != root:
+    if Path(cirnet_sim.__file__).resolve() != entry or Path(str(files('cirnet_sim'))).resolve() != root:
         raise ValueError('Simulator imports or resources are shadowed by source.')
+    import netcircuit_sim
+    if netcircuit_sim is not cirnet_sim:
+        raise ValueError('Legacy Simulator imports must resolve to the canonical package.')
     checked = set()
     for item in artifact.files or ():
         name = str(item).replace('\\', '/')
-        if not name.startswith('netcircuit_sim/') or ('__pycache__' in item.parts and item.suffix == '.pyc'):
+        if not name.startswith(('cirnet_sim/', 'netcircuit_sim/')) or ('__pycache__' in item.parts and item.suffix == '.pyc'):
             continue
         target = Path(artifact.locate_file(item)).resolve()
-        if not target.is_relative_to(root) or not target.is_file():
+        package_root = root.parent / name.split('/')[0]
+        if not target.is_relative_to(package_root) or not target.is_file():
             raise ValueError(f'Invalid/missing installed Simulator resource: {item}')
         if verify_hashes:
             expected = item.hash
@@ -122,15 +132,15 @@ def installed_provenance(*, verify_hashes=True):
             if actual != expected.value:
                 raise ValueError(f'Installed Simulator resource differs from wheel RECORD: {item}')
         checked.add(name)
-    if not {'netcircuit_sim/' + module for module in MODULES} <= checked:
+    if not ({'cirnet_sim/' + module for module in MODULES} | {'netcircuit_sim/__init__.py'}) <= checked:
         raise ValueError('Installed Simulator RECORD is missing runtime modules.')
     for name, module in tuple(sys.modules.items()):
-        if name == 'netcircuit_sim' or name.startswith('netcircuit_sim.'):
+        if name in ('cirnet_sim','netcircuit_sim') or name.startswith(('cirnet_sim.','netcircuit_sim.')):
             origin = getattr(module, '__file__', None)
             if origin and not Path(origin).resolve().is_relative_to(root):
                 raise ValueError(f'Simulator submodule shadowed by source: {name}: {origin}')
     result = {'name': NAME, 'version': VERSION, 'package_root': str(root), 'owned_files': len(checked)}
-    if os.environ.get('NETCIRCUIT_SIMULATOR_ARTIFACT_MANIFEST'):
+    if getenv('CIRNET_SIMULATOR_ARTIFACT_MANIFEST'):
         selected, digest = selected_wheel_details()
         result.update(verify_selected_install(selected, digest))
     return result

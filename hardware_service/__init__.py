@@ -1,3 +1,3 @@
-"""Hardware Service package for net*CIRCUIT Remote."""
+"""Hardware Service package for CIRNET Remote."""
 
 __version__ = "0.1.1"

@@ -58,7 +58,7 @@ def test_rpc_control_remains_available_while_configured_simulations_wait(monkeyp
     from contracts.generated import rpc_v2_pb2_grpc as rpc
     from hardware_service.station.virtual import VirtualHardwareStation
 
-    monkeypatch.setenv('NETCIRCUIT_SIMULATION_WORKERS', '8')
+    monkeypatch.setenv('CIRNET_SIMULATION_WORKERS', '8')
     finish = Event()
 
     class WaitingSimulation(VirtualHardwareStation):

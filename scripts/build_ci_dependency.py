@@ -18,8 +18,8 @@ from artifact_paths import artifact_directory
 ROOT = Path(__file__).resolve().parents[1]
 PRODUCTS = {
     'Contracts': ('requirements-build.lock', 'cirnet_contracts-0.1.1-py3-none-any.whl'),
-    'Simulator': ('requirements-verification.lock', 'netcircuit_simulator-0.1.1-py3-none-any.whl'),
-    'Hardware': ('requirements-verification.lock', 'netcircuit_hardware_service-0.1.1-py3-none-any.whl'),
+    'Simulator': ('requirements-verification.lock', 'cirnet_simulator-0.1.1-py3-none-any.whl'),
+    'Hardware': ('requirements-verification.lock', 'cirnet_hardware_service-0.1.1-py3-none-any.whl'),
 }
 
 

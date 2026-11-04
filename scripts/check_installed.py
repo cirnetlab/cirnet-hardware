@@ -18,7 +18,7 @@ VERSION = '0.1.1'
 MODULES = ('__init__.py', 'fpga_transport.py', 'models.py', 'rpc.py', 'server.py',
            'station/__init__.py', 'station/base.py', 'station/physical.py', 'station/virtual.py')
 OWNED = {'hardware_service/' + name for name in MODULES}
-DEPENDENCIES = {'cirnet-contracts==0.1.1', 'netcircuit-simulator==0.1.1',
+DEPENDENCIES = {'cirnet-contracts==0.1.1', 'cirnet-simulator==0.1.1',
                 'grpcio==1.84.0', 'protobuf==7.36.2', 'jsonschema==4.26.0'}
 
 
@@ -35,14 +35,14 @@ def verify_selected_wheel(wheel, artifact):
         installed_digest = info['hash'].split('=', 1)[1]
     if installed_digest != digest:
         raise ValueError('Installed Hardware archive digest differs from the selected wheel; force reinstall the selected wheel.')
-    prefix = f'netcircuit_hardware_service-{VERSION}.dist-info/'
+    prefix = f'cirnet_hardware_service-{VERSION}.dist-info/'
     expected = OWNED | {prefix + name for name in ('licenses/LICENSE', 'METADATA', 'WHEEL', 'top_level.txt', 'RECORD')}
     with ZipFile(io.BytesIO(payload)) as archive:
         if len(archive.namelist()) != len(expected) or set(archive.namelist()) != expected:
             raise ValueError('Unexpected selected Hardware wheel payload inventory.')
         metadata = Parser().parsestr(archive.read(prefix + 'METADATA').decode('utf-8'))
-        if metadata['Name'] != 'netcircuit-hardware-service' or metadata['Version'] != VERSION:
-            raise ValueError('Expected netcircuit-hardware-service==0.1.1.')
+        if metadata['Name'] != 'cirnet-hardware-service' or metadata['Version'] != VERSION:
+            raise ValueError('Expected cirnet-hardware-service==0.1.1.')
         dependencies = {item.replace(' ', '') for item in metadata.get_all('Requires-Dist', []) if ';' not in item}
         if dependencies != DEPENDENCIES:
             raise ValueError('Hardware runtime dependency pins differ from the approved release set.')
@@ -60,9 +60,9 @@ def verify_selected_wheel(wheel, artifact):
 
 def check_installed(*, wheel=None):
     import hardware_service
-    artifact = distribution('netcircuit-hardware-service')
+    artifact = distribution('cirnet-hardware-service')
     if artifact.version != VERSION or hardware_service.__version__ != VERSION:
-        raise ValueError('Expected netcircuit-hardware-service==0.1.1.')
+        raise ValueError('Expected cirnet-hardware-service==0.1.1.')
     if not artifact.read_text('WHEEL') or not artifact.read_text('RECORD'):
         raise ValueError('Hardware distribution is shadowed by source metadata.')
     direct = json.loads(artifact.read_text('direct_url.json') or '{}')

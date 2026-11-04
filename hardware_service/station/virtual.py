@@ -8,7 +8,7 @@ from contracts.validation import validate
 from contracts.instrument_validation import validate_plan_instruments
 from hardware_service.models import BreadboardCapability, StationCapabilities
 from hardware_service.station.base import HardwareStation, HardwareError, StationState as S, serialized
-from netcircuit_sim.backends import (SimulationError, run_plan, compile_graph,
+from cirnet_sim.backends import (SimulationError, run_plan, compile_graph,
     select_backend_id, get_backend_descriptor)
 
 _pool=None

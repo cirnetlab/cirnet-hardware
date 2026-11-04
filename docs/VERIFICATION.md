@@ -4,9 +4,9 @@ Current repository identity is [CIRNETLAB/CIRNET-Hardware](https://github.com/CI
 
 Create logs, raw JSON, screenshots, traces, exports, environments and diagnostic output outside every checkout, worktree and Git administration directory from the start. Only Markdown verification evidence belongs in this repository. Preserve approved source assets, fixtures, historical evidence and licenses. Build caches/egg-info are compilation outputs, not diagnostic evidence; do not package them.
 
-Use the pinned independent `netcircuit-artifact-paths==1.0.0a1` DEV wheel and its canonical Node implementation. `scripts/bootstrap_contract_tools.py` verifies wheel/Node digests from `integration/contracts-version.json` before the first allocation, publishes the owning session/context and cleanup CLI before pip, and materializes only the verified allocator as a compilation cache. No consumer owns another path-validation implementation. Node and Git are required; CI pins Node 22.
+DEV source uses `cirnet-artifact-paths` and `cirnet_artifact_paths`. The reviewed release lock still selects immutable `netcircuit-artifact-paths==1.0.0a1`; adapters support that exact wheel and Node implementation until a new artifact is reviewed. `scripts/bootstrap_contract_tools.py` verifies wheel/Node digests from `integration/contracts-version.json` before the first allocation, publishes the owning session/context and cleanup CLI before pip, and materializes only the verified allocator as a compilation cache. No consumer owns another path-validation implementation. Node and Git are required; CI pins Node 22.
 
-Before a cross-repository allocation, set `NETCIRCUIT_ARTIFACTS_CONTEXT` to JSON containing an explicit owner and all participating absolute Git roots. Keep that exact context/session through children and cleanup. Standalone verification needs only this repository. An exported source product inside a session remains an export, not a Git root. Denied output or Git enumeration fails closed; never fall back into source. Bootstrap pip and later child processes use session-owned TEMP/TMP/TMPDIR and caches. Set external defaults before any application import in integration.
+Before a cross-repository allocation, set `CIRNET_ARTIFACTS_CONTEXT` to JSON containing an explicit owner and all participating absolute Git roots. Keep that exact context/session through children and cleanup. Standalone verification needs only this repository. An exported source product inside a session remains an export, not a Git root. Denied output or Git enumeration fails closed; never fall back into source. Bootstrap pip and later child processes use session-owned TEMP/TMP/TMPDIR and caches. Set external defaults before any application import in integration.
 
 Use a fresh external environment, the SHA256-locked complete third-party closure, and reviewed wheel manifests for `cirnet-contracts==0.1.1` and a Simulator 0.1.1 build that pins that distribution. No sibling sources, editable installation, unpinned latest or root codegen is supported. Build `--no-isolation` after installing locked build requirements. Inspect wheel/sdist members and licenses, then force-install the exact candidate wheel with `--no-deps`, run `pip check`, and bind `scripts/check_installed.py --wheel ABSOLUTE_WHEEL` to its archive digest, metadata, payload and RECORD. Test from an external CWD with `python -I -B -m pytest ABSOLUTE_PRODUCT/tests --basetemp SESSION/hw-leaf-pytest`; test helpers remain spawn-importable without exposing product source. Cacheprovider stays disabled. Pass `-B` explicitly because isolated mode ignores the `PYTHONDONTWRITEBYTECODE` environment variable.
 
@@ -15,3 +15,57 @@ For release acceptance, export the reviewed source into the owned session, prove
 Record revision/dirty state, time/timezone, environment, commands, PASS/FAIL/NOT_RUN/BLOCKED, evidence inspection and limits in Markdown. Tests do not certify electrical safety, FPGA ABI/timing or real hardware. Workflow changes require actionlint 1.7.12 with `-shellcheck= -pyflakes=`. Compare status, staged diff and physical ignored-output inventory before/after; keep original history/source unchanged.
 
 After evidence inspection and worker shutdown, clean only the owning session with `node scripts/artifact-paths.mjs --cleanup SESSION`. CI uses the published canonical cleanup CLI with `always()` even after bootstrap/install failure. Never clean shared parent directories, another session, or historical outputs. When sharing an integration session, its owner performs final cleanup; leaf tasks do not remove it.
+
+
+## 2026-11-04 canonical naming verification
+
+PASS on Windows, Asia/Saigon (+07:00), with Python 3.14.4, Node 24.20.0,
+pytest 9.1.1 and actionlint 1.7.12. CI continues to pin Python 3.12 and Node 22;
+this local run does not claim a Linux CI result. Verification used fresh external
+source exports and a fresh virtual environment with the complete hash-locked
+Hardware verification closure. The exports were uncommitted inputs based on
+`d58f96a051ea5940b46cf2e661bd200f4c275521`; they are distinct from a future committed checkout and immutable
+published releases. `SOURCE_DATE_EPOCH=1793782800` was explicit.
+
+The selected `cirnet-contracts==0.1.1` wheel SHA256 was
+`2ba8cd1a3c1aeb02c10c154a5e3d8b169e96f4caee4c332d4a1bbc88d9ff2e1a`.
+The immutable DEV wheel remained selected by its existing SHA256
+`ff76532c69b2115338edb641660c966c5459dd40cb806f52a1e2e8c379c70a1f`;
+actual canonical-environment bootstrap, installation and allocator integrity
+checks passed with that legacy artifact. No published artifact or historical
+provenance lock was changed.
+
+`cirnet_hardware_service-0.1.1-py3-none-any.whl` SHA256:
+`9bf5b632fa2313272fc7389f3b72b2932715b55f0b3d84443aee6ab392d46f00`.
+The wheel contains nine `hardware_service` modules and 14 total archive members
+including distribution metadata. It pins `cirnet-simulator==0.1.1`, selected by
+SHA256 `8865ba5c120ccf6c41bb7f2f7927d092dcccbf5c79146118353b0a542b583cb2`.
+All **111 tests passed** in the final installed-wheel run. Coverage includes actual
+loopback calls through canonical and legacy RPC routes with identical safety
+behavior, legacy worker-setting fallback and canonical precedence, 100,000-sample
+NCAP transport, guarded lifecycle, no-driver behavior and actual spawned workers.
+
+The initial sandboxed run passed 100 tests and could not connect its 11 loopback
+RPC cases because Windows returned WSA10013. Those same cases passed with local
+socket access; the final complete run also passed with that access. No RPC test
+was skipped or replaced with a mocked transport.
+
+`python -m pip check` and the newly selected wheel's
+`scripts/check_installed.py --wheel ABSOLUTE_WHEEL` passed after force reinstall.
+Tests ran from the external working directory using
+`python -I -B -m pytest ABSOLUTE_TESTS --basetemp OWNED_SESSION/PRODUCT-pytest-final-triplet`.
+The changed workflow passed actionlint 1.7.12 with `-shellcheck= -pyflakes=`;
+canonical CI secrets/variables retain explicit legacy fallbacks, including SHA256.
+The official Windows actionlint archive SHA256 was
+`6e7241b51e6817ea6a047693d8e6fed13b31819c9a0dd6c5a726e1592d22f6e9`.
+
+Raw build/install/test diagnostics began under the allocator-owned shared session
+`C:/Users/trann/.codex/visualizations/2026/10/28/01a184f1-bcd8-7171-94bd-3a3cef062860/netcircuit-zw1kOX/python-leaves`.
+The session owner retains it for integrated review and cleanup. Frozen fixtures,
+historical Markdown and published release inputs were preserved. These checks do
+not establish physical hardware availability, electrical safety certification,
+native SPICE integration or analog capability.
+
+### Final namespace and allocator follow-up (2026-11-04)
+
+All 113 tests pass with final Contracts wheel `e129eb9075083dccbce9a37a595abe04f405197c2c06a86e651cb47b9a8acead`, Simulator wheel `8865ba5c120ccf6c41bb7f2f7927d092dcccbf5c79146118353b0a542b583cb2` and Hardware wheel `e22fed2ce416dbf69a7c2d808266bd1298cea2189073bdc445d5928389ef7669`. This includes real native RPC/future cases and both allocator alias regressions. The source CI selects the pushed Contracts and Simulator commits by full Git revision and an archive SHA256 verified against every Git blob. Current raw diagnostics are external in the `netcircuit-cKRGky` session; the earlier shared diagnostic directory was partially removed by a corrected Remote test-fixture isolation issue. Source, Git history and developer data were preserved.

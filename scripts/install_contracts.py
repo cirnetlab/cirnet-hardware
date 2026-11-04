@@ -1,6 +1,11 @@
 """Install the exact selected Contracts wheel after the locked dependency closure."""
 import argparse
 import os
+try:
+    from scripts.environment import getenv, export_environment
+except ModuleNotFoundError:
+    from environment import getenv, export_environment
+
 from pathlib import Path
 import subprocess
 import sys
@@ -15,11 +20,11 @@ def main(argv=None):
     parser.add_argument('--manifest')
     args=parser.parse_args(argv)
     require_new_contracts_environment()
-    if args.manifest or os.environ.get('NETCIRCUIT_CONTRACTS_ARTIFACT_MANIFEST'):
+    if args.manifest or getenv('CIRNET_CONTRACTS_ARTIFACT_MANIFEST'):
         wheel,digest=selected_wheel_details(args.manifest)
     else:
-        url=os.environ.get('NETCIRCUIT_CONTRACTS_WHEEL_URL')
-        digest=os.environ.get('NETCIRCUIT_CONTRACTS_WHEEL_SHA256')
+        url=getenv('CIRNET_CONTRACTS_WHEEL_URL')
+        digest=getenv('CIRNET_CONTRACTS_WHEEL_SHA256')
         if not url or not digest:
             parser.error('Select an immutable Contracts manifest or exact HTTPS URL/SHA256.')
         wheel=artifact_directory('hw-leaf-contracts')/'cirnet_contracts-0.1.1-py3-none-any.whl'

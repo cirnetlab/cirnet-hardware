@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def selected_wheel():
-    direct = json.loads(distribution('netcircuit-hardware-service').read_text('direct_url.json'))
+    direct = json.loads(distribution('cirnet-hardware-service').read_text('direct_url.json'))
     return Path(url2pathname(urlparse(direct['url']).path))
 
 
@@ -40,6 +40,7 @@ def test_selected_installed_hardware_wheel_and_dependencies_have_provenance():
     assert data['contracts']['name'] == 'cirnet-contracts'
     assert data['contracts']['version'] == '0.1.1'
     assert data['simulator']['version'] == '0.1.1'
+    assert data['simulator']['owned_files'] == 10
 
 
 def test_product_source_shadowing_is_rejected():
@@ -59,7 +60,7 @@ def test_legacy_contracts_distribution_is_rejected(tmp_path):
 
 @pytest.mark.parametrize('change', ['modified', 'unowned'])
 def test_modified_installed_payload_is_rejected(tmp_path, change):
-    artifact = distribution('netcircuit-hardware-service')
+    artifact = distribution('cirnet-hardware-service')
     for item in artifact.files:
         relative = Path(str(item))
         if relative.parts[0] == 'hardware_service' or relative.parts[0].endswith('.dist-info'):
@@ -94,27 +95,31 @@ def test_different_same_version_archive_is_rejected(tmp_path):
 
 
 def test_bootstrap_failure_publishes_owned_cleanup_before_pip(tmp_path):
-    wheel = Path(os.environ['NETCIRCUIT_ARTIFACTS_SESSION']) / 'hw-leaf-dev-bootstrap/netcircuit_artifact_paths-1.0.0a1-py3-none-any.whl'
+    wheel = Path(os.environ['CIRNET_ARTIFACTS_SESSION']) / 'hw-leaf-dev-bootstrap/netcircuit_artifact_paths-1.0.0a1-py3-none-any.whl'
     pin = json.loads((ROOT / 'integration/contracts-version.json').read_text())['dev']
     assert wheel.is_file()
-    env = {**os.environ, 'NETCIRCUIT_ARTIFACTS_DIR': str(tmp_path),
+    env = {**os.environ, 'CIRNET_ARTIFACTS_DIR': str(tmp_path),
            'GITHUB_ENV': str(tmp_path / 'github-env'),
            'PIP_REQUIREMENT': str(tmp_path / 'intentionally-missing-requirements')}
+    env.pop('CIRNET_ARTIFACTS_SESSION', None)
     env.pop('NETCIRCUIT_ARTIFACTS_SESSION', None)
     result = subprocess.run([sys.executable, str(ROOT / 'scripts/bootstrap_contract_tools.py'),
         '--wheel', str(wheel), '--sha256', pin['wheel_sha256']], env=env, capture_output=True, text=True)
     assert result.returncode != 0 and 'DEV wheel install failed' in result.stderr
     published = dict(line.split('=', 1) for line in (tmp_path / 'github-env').read_text().splitlines())
-    session = Path(published['NETCIRCUIT_ARTIFACTS_SESSION'])
+    session = Path(published['CIRNET_ARTIFACTS_SESSION'])
     try:
-        cli = Path(published['NETCIRCUIT_ARTIFACTS_CLI'])
+        cli = Path(published['CIRNET_ARTIFACTS_CLI'])
         assert cli.is_file() and cli.is_relative_to(session)
         assert (session / 'hw-leaf-dev-bootstrap/install.log').read_text()
-        cleaned = subprocess.run(['node', str(cli), '--context', published['NETCIRCUIT_ARTIFACTS_CONTEXT'],
+        cleaned = subprocess.run(['node', str(cli), '--context', published['CIRNET_ARTIFACTS_CONTEXT'],
             '--cleanup', str(session)], capture_output=True, text=True)
         assert cleaned.returncode == 0, cleaned.stderr
     finally:
-        from netcircuit_artifact_paths import cleanup_artifact_session
+        try:
+            from cirnet_artifact_paths import cleanup_artifact_session
+        except ModuleNotFoundError:
+            from netcircuit_artifact_paths import cleanup_artifact_session
         if session.exists():
-            cleanup_artifact_session(session, context=json.loads(published['NETCIRCUIT_ARTIFACTS_CONTEXT']))
+            cleanup_artifact_session(session, context=json.loads(published['CIRNET_ARTIFACTS_CONTEXT']))
     assert not session.exists()

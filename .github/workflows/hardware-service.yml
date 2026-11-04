@@ -7,8 +7,8 @@ permissions:
   contents: read
 env:
   PYTHONDONTWRITEBYTECODE: '1'
-  NETCIRCUIT_CONTRACTS_DEV_WHEEL_URL: ${{ vars.NETCIRCUIT_CONTRACTS_DEV_WHEEL_URL }}
-  NETCIRCUIT_CONTRACTS_DEV_WHEEL_SHA256: ${{ vars.NETCIRCUIT_CONTRACTS_DEV_WHEEL_SHA256 }}
+  CIRNET_CONTRACTS_DEV_WHEEL_URL: ${{ vars.CIRNET_CONTRACTS_DEV_WHEEL_URL || vars.NETCIRCUIT_CONTRACTS_DEV_WHEEL_URL }}
+  CIRNET_CONTRACTS_DEV_WHEEL_SHA256: ${{ vars.CIRNET_CONTRACTS_DEV_WHEEL_SHA256 || vars.NETCIRCUIT_CONTRACTS_DEV_WHEEL_SHA256 }}
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -22,46 +22,46 @@ jobs:
           python-version: '3.12'
       - name: Bootstrap the pinned canonical DEV allocator
         env:
-          NETCIRCUIT_ARTIFACTS_DIR: ${{ runner.temp }}/netcircuit-verification
-          NETCIRCUIT_ARTIFACTS_TOKEN: ${{ secrets.NETCIRCUIT_ARTIFACTS_READ_TOKEN }}
+          CIRNET_ARTIFACTS_DIR: ${{ runner.temp }}/cirnet-verification
+          CIRNET_ARTIFACTS_TOKEN: ${{ secrets.CIRNET_ARTIFACTS_READ_TOKEN || secrets.NETCIRCUIT_ARTIFACTS_READ_TOKEN }}
         run: python scripts/bootstrap_contract_tools.py
       - name: Keep build and installation diagnostics in the owned session
         shell: bash
         run: |
           {
-            echo "TMP=$NETCIRCUIT_ARTIFACTS_SESSION"
-            echo "TEMP=$NETCIRCUIT_ARTIFACTS_SESSION"
-            echo "TMPDIR=$NETCIRCUIT_ARTIFACTS_SESSION"
-            echo "npm_config_cache=$NETCIRCUIT_ARTIFACTS_SESSION/npm-cache"
-            echo "PIP_CACHE_DIR=$NETCIRCUIT_ARTIFACTS_SESSION/hw-leaf-pip-cache"
+            echo "TMP=$CIRNET_ARTIFACTS_SESSION"
+            echo "TEMP=$CIRNET_ARTIFACTS_SESSION"
+            echo "TMPDIR=$CIRNET_ARTIFACTS_SESSION"
+            echo "npm_config_cache=$CIRNET_ARTIFACTS_SESSION/npm-cache"
+            echo "PIP_CACHE_DIR=$CIRNET_ARTIFACTS_SESSION/hw-leaf-pip-cache"
             echo "PYTHONDONTWRITEBYTECODE=1"
             echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)"
           } >> "$GITHUB_ENV"
       - name: Install the locked closure and build pinned dependency wheels
         run: |
-          python -m pip download --require-hashes --only-binary=:all: -r requirements-verification.lock --dest "$NETCIRCUIT_ARTIFACTS_SESSION/hw-leaf-wheelhouse"
-          python -m pip install --require-hashes --only-binary=:all: --no-index --find-links "$NETCIRCUIT_ARTIFACTS_SESSION/hw-leaf-wheelhouse" -r requirements-verification.lock
+          python -m pip download --require-hashes --only-binary=:all: -r requirements-verification.lock --dest "$CIRNET_ARTIFACTS_SESSION/hw-leaf-wheelhouse"
+          python -m pip install --require-hashes --only-binary=:all: --no-index --find-links "$CIRNET_ARTIFACTS_SESSION/hw-leaf-wheelhouse" -r requirements-verification.lock
           contracts_manifest="$(python -B scripts/build_ci_dependency.py Contracts)"
           simulator_manifest="$(python -B scripts/build_ci_dependency.py Simulator)"
           python scripts/install_contracts.py --manifest "$contracts_manifest"
           python scripts/install_simulator.py --manifest "$simulator_manifest"
-          echo "NETCIRCUIT_CONTRACTS_ARTIFACT_MANIFEST=$contracts_manifest" >> "$GITHUB_ENV"
+          echo "CIRNET_CONTRACTS_ARTIFACT_MANIFEST=$contracts_manifest" >> "$GITHUB_ENV"
       - name: Build and verify the installed Hardware product
         shell: bash
         run: |
-          python -m build --no-isolation --outdir "$NETCIRCUIT_ARTIFACTS_SESSION/hw-leaf-dist"
-          python -m pip install --no-index --no-deps --force-reinstall "$NETCIRCUIT_ARTIFACTS_SESSION/hw-leaf-dist/netcircuit_hardware_service-0.1.1-py3-none-any.whl"
+          python -m build --no-isolation --outdir "$CIRNET_ARTIFACTS_SESSION/hw-leaf-dist"
+          python -m pip install --no-index --no-deps --force-reinstall "$CIRNET_ARTIFACTS_SESSION/hw-leaf-dist/cirnet_hardware_service-0.1.1-py3-none-any.whl"
           python -m pip check
-          python scripts/check_installed.py --wheel "$NETCIRCUIT_ARTIFACTS_SESSION/hw-leaf-dist/netcircuit_hardware_service-0.1.1-py3-none-any.whl"
-          (cd "$NETCIRCUIT_ARTIFACTS_SESSION/hw-leaf-dist" && sha256sum ./*.whl ./*.tar.gz > SHA256SUMS)
-          cd "$NETCIRCUIT_ARTIFACTS_SESSION"
-          python -I -B -m pytest "$GITHUB_WORKSPACE/tests" --basetemp "$NETCIRCUIT_ARTIFACTS_SESSION/hw-leaf-pytest"
+          python scripts/check_installed.py --wheel "$CIRNET_ARTIFACTS_SESSION/hw-leaf-dist/cirnet_hardware_service-0.1.1-py3-none-any.whl"
+          (cd "$CIRNET_ARTIFACTS_SESSION/hw-leaf-dist" && sha256sum ./*.whl ./*.tar.gz > SHA256SUMS)
+          cd "$CIRNET_ARTIFACTS_SESSION"
+          python -I -B -m pytest "$GITHUB_WORKSPACE/tests" --basetemp "$CIRNET_ARTIFACTS_SESSION/hw-leaf-pytest"
       - name: Upload versioned artifacts for review
         uses: actions/upload-artifact@v4
         with:
           name: hardware-service-0.1.1
-          path: ${{ env.NETCIRCUIT_ARTIFACTS_SESSION }}/hw-leaf-dist/*
+          path: ${{ env.CIRNET_ARTIFACTS_SESSION }}/hw-leaf-dist/*
           if-no-files-found: error
       - name: Clean this owned verification session
-        if: always() && env.NETCIRCUIT_ARTIFACTS_SESSION != ''
-        run: node "$NETCIRCUIT_ARTIFACTS_CLI" --cleanup "$NETCIRCUIT_ARTIFACTS_SESSION"
+        if: always() && env.CIRNET_ARTIFACTS_SESSION != ''
+        run: node "$CIRNET_ARTIFACTS_CLI" --cleanup "$CIRNET_ARTIFACTS_SESSION"

@@ -9,7 +9,7 @@ import time
 import pytest
 
 from hardware_service.station import virtual
-from netcircuit_sim.engine import VirtualCompiler, run_plan
+from cirnet_sim.engine import VirtualCompiler, run_plan
 
 
 def worker_probe():
@@ -27,9 +27,10 @@ def isolated_pool():
 
 @pytest.mark.parametrize('value,expected', [(None, 4), ('1', 1), ('8', 8)])
 def test_shared_worker_setting_defaults_and_reads_environment(monkeypatch, value, expected):
+    monkeypatch.delenv('CIRNET_SIMULATION_WORKERS', raising=False)
     monkeypatch.delenv('NETCIRCUIT_SIMULATION_WORKERS', raising=False)
     if value is not None:
-        monkeypatch.setenv('NETCIRCUIT_SIMULATION_WORKERS', value)
+        monkeypatch.setenv('CIRNET_SIMULATION_WORKERS', value)
     config = importlib.import_module('contracts.runtime_config')
     assert config.simulation_worker_count() == expected
 
@@ -37,12 +38,12 @@ def test_shared_worker_setting_defaults_and_reads_environment(monkeypatch, value
 @pytest.mark.parametrize('value', [0, -1, True, 1.5, '', '0', '-2', '1.5', 'many'])
 def test_shared_worker_setting_rejects_invalid_explicit_values(value):
     config = importlib.import_module('contracts.runtime_config')
-    with pytest.raises(ValueError, match='NETCIRCUIT_SIMULATION_WORKERS'):
+    with pytest.raises(ValueError, match='CIRNET_SIMULATION_WORKERS'):
         config.simulation_worker_count(value)
 
 
 def test_configured_pool_spawns_two_workers_and_closes_them(monkeypatch):
-    monkeypatch.setenv('NETCIRCUIT_SIMULATION_WORKERS', '2')
+    monkeypatch.setenv('CIRNET_SIMULATION_WORKERS', '2')
     pool = virtual.simulation_pool()
     probes = [pool.submit(worker_probe) for _ in range(4)]
     results = [future.result(timeout=15) for future in probes]
@@ -56,7 +57,7 @@ def test_configured_pool_spawns_two_workers_and_closes_them(monkeypatch):
 
 
 def test_spawned_simulation_capture_remains_deterministic(monkeypatch):
-    monkeypatch.setenv('NETCIRCUIT_SIMULATION_WORKERS', '1')
+    monkeypatch.setenv('CIRNET_SIMULATION_WORKERS', '1')
     graph = {'schema_version': '1.0', 'circuit_id': 'input-led',
              'modules': [{'id': 'X', 'type': 'DIGITAL_SWITCH', 'properties': {'state': True}},
                          {'id': 'L', 'type': 'LED'}],
@@ -70,7 +71,7 @@ def test_spawned_simulation_capture_remains_deterministic(monkeypatch):
 
 
 def test_pool_creation_waits_for_previous_pool_shutdown(monkeypatch):
-    monkeypatch.setenv('NETCIRCUIT_SIMULATION_WORKERS', '1')
+    monkeypatch.setenv('CIRNET_SIMULATION_WORKERS', '1')
     pool = virtual.simulation_pool()
     shutdown_started, finish_shutdown, creation_started, created = (Event() for _ in range(4))
     original_shutdown = pool.shutdown
