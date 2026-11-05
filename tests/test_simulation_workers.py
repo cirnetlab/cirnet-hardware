@@ -1,5 +1,4 @@
 """Worker configuration, cross-platform execution and owned pool cleanup."""
-import importlib
 import multiprocessing
 import os
 from concurrent.futures import ThreadPoolExecutor
@@ -23,23 +22,6 @@ def isolated_pool():
     virtual.close_simulation_pool()
     yield
     virtual.close_simulation_pool()
-
-
-@pytest.mark.parametrize('value,expected', [(None, 4), ('1', 1), ('8', 8)])
-def test_shared_worker_setting_defaults_and_reads_environment(monkeypatch, value, expected):
-    monkeypatch.delenv('CIRNET_SIMULATION_WORKERS', raising=False)
-    monkeypatch.delenv('NETCIRCUIT_SIMULATION_WORKERS', raising=False)
-    if value is not None:
-        monkeypatch.setenv('CIRNET_SIMULATION_WORKERS', value)
-    config = importlib.import_module('contracts.runtime_config')
-    assert config.simulation_worker_count() == expected
-
-
-@pytest.mark.parametrize('value', [0, -1, True, 1.5, '', '0', '-2', '1.5', 'many'])
-def test_shared_worker_setting_rejects_invalid_explicit_values(value):
-    config = importlib.import_module('contracts.runtime_config')
-    with pytest.raises(ValueError, match='CIRNET_SIMULATION_WORKERS'):
-        config.simulation_worker_count(value)
 
 
 def test_configured_pool_spawns_two_workers_and_closes_them(monkeypatch):

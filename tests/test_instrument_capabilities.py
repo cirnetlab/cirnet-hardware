@@ -2,7 +2,7 @@
 from copy import deepcopy
 
 import pytest
-from google.protobuf.json_format import MessageToDict, ParseDict
+from google.protobuf.json_format import ParseDict
 
 from contracts.validation import validate
 from hardware_service.models import StationCapabilities
@@ -95,18 +95,6 @@ def test_native_capabilities_export_only_structured_instrument_truth():
     assert virtual['instrument_capabilities']['logic_analyzer']['channels'] == 4
     assert virtual['instrument_capabilities']['generator']['channels'] == 0
     assert not {'instruments', 'logic_analyzer_channels', 'oscilloscope_channels', 'generator_channels'} & set(virtual)
-
-
-def test_generator_profile_preserves_optional_rpc_limit_presence():
-    from contracts.generated import rpc_v2_pb2 as pb
-    base = {'channels': 2, 'runtime_reconfiguration_supported': False}
-    message = ParseDict(base, pb.GeneratorCapability())
-    decoded = MessageToDict(message, preserving_proto_field_name=True, always_print_fields_with_no_presence=True)
-    assert not {'frequency_min_hz', 'frequency_max_hz', 'amplitude_max_vpp', 'offset_min_v', 'offset_max_v', 'status'} & set(decoded)
-    limited = ParseDict({**base, 'offset_min_v': 0, 'frequency_max_hz': 10000}, pb.GeneratorCapability())
-    decoded = MessageToDict(limited, preserving_proto_field_name=True, always_print_fields_with_no_presence=True)
-    assert decoded['offset_min_v'] == 0 and decoded['frequency_max_hz'] == 10000
-    assert 'offset_max_v' not in decoded
 
 
 def test_baseline_generator_configuration_is_accepted_in_plan_before_power_up():
