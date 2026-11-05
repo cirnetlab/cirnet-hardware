@@ -1,5 +1,7 @@
 # CIRNET-Hardware
 
+[English documentation](docs/en/index.md) · [Tài liệu tiếng Việt](docs/vi/index.md)
+
 Repository: [cirnetlab/cirnet-hardware](https://github.com/cirnetlab/cirnet-hardware). Current distributions and settings use CIRNET names. Legacy `NETCIRCUIT_*` settings and RPC routes remain compatible; canonical settings take precedence.
 
 Independent `cirnet-hardware-service==0.1.2`, Python >=3.11. The `hardware_service` namespace owns local-only Hardware RPC 2.0, virtual/physical stations and private FPGA transport. The canonical service route is `cirnet.hardware.v2.HardwareService`; the generated Contracts bindings also register the legacy `netcircuit.hardware.v2.HardwareService` route. New clients retry the legacy route only on `UNIMPLEMENTED`. Runtime consumes exact `cirnet-contracts==0.1.2` and `cirnet-simulator==0.1.2` wheels. No API implementation or sibling checkout is needed. Revalidate the existing immutable `v0.1.1` artifacts under the current repository URL while retaining their original source revisions and SHA256. Compare candidates from changed source separately; changed published bytes or tags require an explicit release decision and must respect immutability. Record the selected artifacts and consumer access in the system manifest.
