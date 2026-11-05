@@ -1,5 +1,29 @@
 # Hardware verification and external artifacts
 
+## 2026-11-05 Python 3.14 compatibility
+
+Primary CI and local verification now use normal-GIL CPython 3.14; reusable
+package metadata retains its 3.11+ compatibility. A fresh Windows AMD64 3.14.6
+environment passes all 114 installed-wheel tests, including actual loopback RPC
+and spawned simulator workers, plus original archive/RECORD provenance checks.
+Its independently extracted sdist rebuilds to identical candidate wheel bytes.
+The existing binary-only hash closure already admits the selected 3.14 Windows
+and glibc Linux wheels; explicit `spawn` preserves worker behavior across the
+Linux 3.14 default-start-method change.
+
+Independent native Linux 3.14.6 verification passes all 115 installed tests,
+including the new CI selection guard, actual DEV bootstrap and real RPC/worker
+coverage. Fresh wheel/sdist builds, selected provenance and `pip check` pass.
+The original pinned Contracts build helper also passes end-to-end on 3.14.
+
+The source CI helper adds only reviewed 3.14 wheel hashes to the pinned
+Contracts build copy, checking original lock digests and exact versions before
+any write. Eleven profile tests pass, including unsafe paths, altered sources
+and invalid version/hash rejection. Release pins and runtime behavior are
+unchanged. Raw diagnostics start in the external session owned by
+`cirnet-python314-compat-20261105`. Hosted Actions, publication and physical
+hardware/FPGA acceptance are NOT_RUN for this upgrade.
+
 ## 2026-11-05 Node 26 LTS CI baseline
 
 Current CI selects Node 26 LTS before allocator bootstrap. Both tests in

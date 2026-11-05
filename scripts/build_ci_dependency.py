@@ -23,6 +23,43 @@ PRODUCTS = {
 }
 
 
+def prepare_build_requirements(source, pin, *, python_version=None):
+    """Extend wheel hashes for a reviewed interpreter, retaining every exact pin."""
+    version = python_version or sys.version_info[:2]
+    profile = pin.get('buildWheelHashes', {}).get(f'{version[0]}.{version[1]}', {})
+    pending, receipt = {}, {}
+    for name, entry in profile.items():
+        if name not in {'requirements-build.lock', 'requirements-runtime.lock'}:
+            raise ValueError('Unexpected CI build requirements path.')
+        path = source / name
+        original = path.read_bytes()
+        digest = hashlib.sha256(original).hexdigest()
+        if digest != entry['sha256']:
+            raise ValueError(f'Pinned build requirements changed: {name}')
+        text = original.decode('utf-8')
+        for requirement, hashes in entry['hashes'].items():
+            if (not re.fullmatch(r'[A-Za-z0-9_.-]+==[^\s;\\]+', requirement)
+                    or not hashes or any(not re.fullmatch('[0-9a-f]{64}', value) for value in hashes)):
+                raise ValueError('Invalid reviewed CI wheel hash entry.')
+            pattern = (r'(?m)^' + re.escape(requirement)
+                       + r' \\\n(?:[ \t]+--hash=sha256:[0-9a-f]{64}(?: \\\n|\n))+')
+            matches = list(re.finditer(pattern, text))
+            if len(matches) != 1 or matches[0].group().endswith('\\\n'):
+                raise ValueError(f'Reviewed CI requirement is missing or ambiguous: {requirement}')
+            match = matches[0]
+            added = [value for value in dict.fromkeys(hashes) if value not in match.group()]
+            if added:
+                block = match.group().rstrip('\n') + ' \\\n' + ' \\\n'.join(
+                    '    --hash=sha256:' + value for value in added) + '\n'
+                text = text[:match.start()] + block + text[match.end():]
+        pending[path] = text.encode('utf-8')
+        receipt[name] = {'originalSha256': digest, 'sha256': hashlib.sha256(pending[path]).hexdigest()}
+    # Validate every source digest and requirement before modifying any file.
+    for path, payload in pending.items():
+        path.write_bytes(payload)
+    return receipt
+
+
 def extract_source(content, destination, archive_root):
     """Allow only regular source files and directories below the expected root."""
     with tarfile.open(fileobj=BytesIO(content), mode='r:gz') as archive:
@@ -59,6 +96,7 @@ def main(argv=None):
     workspace = Path(mkdtemp(prefix=f'{component.lower()}-', dir=artifact_directory('ci-source-dependencies')))
     epoch = extract_source(download_artifact(url, digest), workspace, archive_root)
     source = workspace / archive_root
+    prepared_requirements = prepare_build_requirements(source, pin)
     build_env = workspace / 'build-env'
     dist = workspace / 'dist'
     temporary = workspace / 'tmp'
@@ -82,12 +120,18 @@ def main(argv=None):
     if list(dist.glob('*.whl')) != [wheel]:
         raise ValueError(f'{component} build did not produce the expected wheel: {filename}')
     manifest = workspace / 'artifacts.json'
-    manifest.write_text(json.dumps({
+    artifacts = {
         'schemaVersion': 1,
         'python': {'path': str(wheel), 'sha256': hashlib.sha256(wheel.read_bytes()).hexdigest()},
         'source': {'repository': f'https://github.com/CIRNETLAB/{repo}', 'revision': revision,
                    'sha256': digest},
-    }, indent=2) + '\n', encoding='utf-8')
+    }
+    if prepared_requirements:
+        artifacts['buildRequirements'] = {
+            'python': f'{sys.version_info.major}.{sys.version_info.minor}',
+            'locks': prepared_requirements,
+        }
+    manifest.write_text(json.dumps(artifacts, indent=2) + '\n', encoding='utf-8')
     print(manifest)
 
 

@@ -20,7 +20,7 @@ The immutable Hardware release keeps its original `netcircuit-contracts==0.1.1`
 dependency and uses a separate environment. Both Contracts distributions install
 the `contracts` namespace.
 
-Use Node 26 and Python 3.12 in CI; Python >=3.11 is supported. Begin with an external Python environment and reviewed Contracts/DEV and Simulator artifact manifests. See [verification policy](docs/VERIFICATION.md). The complete third-party runtime/test/build closure is SHA256 locked in `requirements-verification.lock`; first-party wheels have separately reviewed version/digest manifests. The former `dev` code-generation extra is replaced by `test`: consumer tests import installed RPC bindings and never compile canonical Contracts.
+Use Node 26 and Python 3.14 in CI; Python >=3.11 is supported. Begin with an external Python environment and reviewed Contracts/DEV and Simulator artifact manifests. See [verification policy](docs/VERIFICATION.md). The complete third-party runtime/test/build closure is SHA256 locked in `requirements-verification.lock`; first-party wheels have separately reviewed version/digest manifests. The former `dev` code-generation extra is replaced by `test`: consumer tests import installed RPC bindings and never compile canonical Contracts.
 
 ```powershell
 $env:CIRNET_CONTRACTS_ARTIFACT_MANIFEST = 'C:/absolute/contracts/artifacts.json'

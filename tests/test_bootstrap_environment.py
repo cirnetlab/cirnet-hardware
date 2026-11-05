@@ -10,6 +10,11 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def test_ci_selects_python_314():
+    workflow = (ROOT / '.github/workflows/hardware-service.yml').read_text(encoding='utf-8')
+    assert re.findall(r"^          python-version: ['\"]([^'\"]+)['\"]$", workflow, re.MULTILINE) == ['3.14']
+
+
 def test_ci_selects_node_26_before_bootstrapping_allocator():
     workflow = (ROOT / '.github/workflows/hardware-service.yml').read_text(encoding='utf-8')
     steps = re.split(r'^      - ', workflow, flags=re.MULTILINE)[1:]
