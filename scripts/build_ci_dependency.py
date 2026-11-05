@@ -90,8 +90,8 @@ def main(argv=None):
     revision, digest = pin['revision'], pin['sha256']
     if not re.fullmatch('[0-9a-f]{40}', revision):
         raise ValueError(f'CI source dependency requires a full Git commit ID: {component}')
-    repo = f'CIRNET-{component}'
-    url = f'https://codeload.github.com/CIRNETLAB/{repo}/tar.gz/{revision}'
+    repo = f'cirnet-{component.lower()}'
+    url = f'https://codeload.github.com/cirnetlab/{repo}/tar.gz/{revision}'
     archive_root = f'{repo}-{revision}'
     workspace = Path(mkdtemp(prefix=f'{component.lower()}-', dir=artifact_directory('ci-source-dependencies')))
     epoch = extract_source(download_artifact(url, digest), workspace, archive_root)
@@ -123,7 +123,7 @@ def main(argv=None):
     artifacts = {
         'schemaVersion': 1,
         'python': {'path': str(wheel), 'sha256': hashlib.sha256(wheel.read_bytes()).hexdigest()},
-        'source': {'repository': f'https://github.com/CIRNETLAB/{repo}', 'revision': revision,
+        'source': {'repository': f'https://github.com/cirnetlab/{repo}', 'revision': revision,
                    'sha256': digest},
     }
     if prepared_requirements:

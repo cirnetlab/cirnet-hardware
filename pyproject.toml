@@ -18,8 +18,8 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/CIRNETLAB/CIRNET-Hardware"
-Documentation = "https://github.com/CIRNETLAB/CIRNET-Hardware/blob/master/README.md"
+Repository = "https://github.com/cirnetlab/cirnet-hardware"
+Documentation = "https://github.com/cirnetlab/cirnet-hardware/blob/master/README.md"
 
 [project.optional-dependencies]
 test = ["pytest==9.1.1"]

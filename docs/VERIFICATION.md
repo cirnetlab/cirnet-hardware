@@ -1,5 +1,15 @@
 # Hardware verification and external artifacts
 
+## 2026-11-05 Lowercase repository paths
+
+The pinned Contracts and Simulator commits are unchanged. GitHub regenerated
+their source archives with lowercase root directories. Both archive inventories
+and all file bytes matched the Git commits (266 Contracts files and 45 Simulator
+files). The CI helper downloaded both lowercase URLs, verified the updated
+archive SHA256 values and extracted the sources in the owned external session.
+All 11 CI dependency profile tests passed. This check stopped before the wheel
+build. Published release artifacts retain their existing pins.
+
 ## 2026-11-05 Python 3.14 compatibility
 
 Primary CI and local verification now use normal-GIL CPython 3.14; reusable
@@ -35,7 +45,7 @@ Actions and physical hardware verification are NOT_RUN for this policy change.
 Historical results below retain their recorded Node versions. Evidence was
 inspected in the shared external session owned by `cirnet-node26-compat-20261105`.
 
-Current repository identity is [CIRNETLAB/CIRNET-Hardware](https://github.com/CIRNETLAB/CIRNET-Hardware); local `net-Circuit-*` directory names and dated extraction/provenance records remain valid. Current-source CI builds the renamed Contracts and matching Simulator wheels from the exact Git commits and SHA256 source archives in `integration/ci-source-dependencies.json`. Keep immutable v0.1.1 source/tag/artifact provenance separate from candidates rebuilt after documentation or package metadata changes.
+Current repository identity is [cirnetlab/cirnet-hardware](https://github.com/cirnetlab/cirnet-hardware). Dated extraction and provenance records remain valid. Current-source CI builds the renamed Contracts and matching Simulator wheels from the exact Git commits and SHA256 source archives in `integration/ci-source-dependencies.json`. Keep immutable v0.1.1 source/tag/artifact provenance separate from candidates rebuilt after documentation or package metadata changes.
 
 Create logs, raw JSON, screenshots, traces, exports, environments and diagnostic output outside every checkout, worktree and Git administration directory from the start. Only Markdown verification evidence belongs in this repository. Preserve approved source assets, fixtures, historical evidence and licenses. Build caches/egg-info are compilation outputs, not diagnostic evidence; do not package them.
 
