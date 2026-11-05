@@ -1,10 +1,21 @@
 # Hardware verification and external artifacts
 
+## 2026-11-05 Node 26 LTS CI baseline
+
+Current CI selects Node 26 LTS before allocator bootstrap. Both tests in
+`tests/test_bootstrap_environment.py` pass with portable Node 26.13.0 on PATH;
+actionlint 1.7.12 passes the workflow with `-shellcheck= -pyflakes=`. This changes
+the verification toolchain only. Runtime Python source, dependency locks and
+published artifacts are unchanged. The full installed-wheel/RPC gate, hosted
+Actions and physical hardware verification are NOT_RUN for this policy change.
+Historical results below retain their recorded Node versions. Evidence was
+inspected in the shared external session owned by `cirnet-node26-compat-20261105`.
+
 Current repository identity is [CIRNETLAB/CIRNET-Hardware](https://github.com/CIRNETLAB/CIRNET-Hardware); local `net-Circuit-*` directory names and dated extraction/provenance records remain valid. Current-source CI builds the renamed Contracts and matching Simulator wheels from the exact Git commits and SHA256 source archives in `integration/ci-source-dependencies.json`. Keep immutable v0.1.1 source/tag/artifact provenance separate from candidates rebuilt after documentation or package metadata changes.
 
 Create logs, raw JSON, screenshots, traces, exports, environments and diagnostic output outside every checkout, worktree and Git administration directory from the start. Only Markdown verification evidence belongs in this repository. Preserve approved source assets, fixtures, historical evidence and licenses. Build caches/egg-info are compilation outputs, not diagnostic evidence; do not package them.
 
-DEV source uses `cirnet-artifact-paths` and `cirnet_artifact_paths`. The reviewed release lock still selects immutable `netcircuit-artifact-paths==1.0.0a1`; adapters support that exact wheel and Node implementation until a new artifact is reviewed. `scripts/bootstrap_contract_tools.py` verifies wheel/Node digests from `integration/contracts-version.json` before the first allocation, publishes the owning session/context and cleanup CLI before pip, and materializes only the verified allocator as a compilation cache. No consumer owns another path-validation implementation. Node and Git are required; CI pins Node 22.
+DEV source uses `cirnet-artifact-paths` and `cirnet_artifact_paths`. The reviewed release lock still selects immutable `netcircuit-artifact-paths==1.0.0a1`; adapters support that exact wheel and Node implementation until a new artifact is reviewed. `scripts/bootstrap_contract_tools.py` verifies wheel/Node digests from `integration/contracts-version.json` before the first allocation, publishes the owning session/context and cleanup CLI before pip, and materializes only the verified allocator as a compilation cache. No consumer owns another path-validation implementation. Node and Git are required; CI selects Node 26 LTS.
 
 Before a cross-repository allocation, set `CIRNET_ARTIFACTS_CONTEXT` to JSON containing an explicit owner and all participating absolute Git roots. Keep that exact context/session through children and cleanup. Standalone verification needs only this repository. An exported source product inside a session remains an export, not a Git root. Denied output or Git enumeration fails closed; never fall back into source. Bootstrap pip and later child processes use session-owned TEMP/TMP/TMPDIR and caches. Set external defaults before any application import in integration.
 

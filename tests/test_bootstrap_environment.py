@@ -3,10 +3,21 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_ci_selects_node_26_before_bootstrapping_allocator():
+    workflow = (ROOT / '.github/workflows/hardware-service.yml').read_text(encoding='utf-8')
+    steps = re.split(r'^      - ', workflow, flags=re.MULTILINE)[1:]
+    node = [index for index, step in enumerate(steps) if step.startswith('uses: actions/setup-node@')]
+    bootstrap = next(index for index, step in enumerate(steps)
+                     if 'run: python scripts/bootstrap_contract_tools.py' in step)
+    assert len(node) == 1 and node[0] < bootstrap, 'select Node before the first allocator call'
+    assert re.search(r"^          node-version: ['\"]26['\"]$", steps[node[0]], re.MULTILINE)
 
 
 def test_bootstrap_contains_actual_pip_child_temporary_output(tmp_path, monkeypatch):
