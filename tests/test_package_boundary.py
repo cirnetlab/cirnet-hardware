@@ -34,12 +34,12 @@ def test_selected_installed_hardware_wheel_and_dependencies_have_provenance():
     result = probe()
     assert result.returncode == 0, result.stderr
     data = json.loads(result.stdout)
-    assert data['hardware']['version'] == '0.1.1'
+    assert data['hardware']['version'] == '0.1.2'
     assert data['hardware']['owned_files'] == 9
     assert data['hardware']['selected_files'] == 14
     assert data['contracts']['name'] == 'cirnet-contracts'
-    assert data['contracts']['version'] == '0.1.1'
-    assert data['simulator']['version'] == '0.1.1'
+    assert data['contracts']['version'] == '0.1.2'
+    assert data['simulator']['version'] == '0.1.2'
     assert data['simulator']['owned_files'] == 10
 
 
@@ -95,8 +95,9 @@ def test_different_same_version_archive_is_rejected(tmp_path):
 
 
 def test_bootstrap_failure_publishes_owned_cleanup_before_pip(tmp_path):
-    wheel = Path(os.environ['CIRNET_ARTIFACTS_SESSION']) / 'hw-leaf-dev-bootstrap/netcircuit_artifact_paths-1.0.0a1-py3-none-any.whl'
     pin = json.loads((ROOT / 'integration/contracts-version.json').read_text())['dev']
+    filename = f"{pin['name'].replace('-', '_')}-{pin['version']}-py3-none-any.whl"
+    wheel = Path(os.environ['CIRNET_ARTIFACTS_SESSION']) / 'hw-leaf-dev-bootstrap' / filename
     assert wheel.is_file()
     env = {**os.environ, 'CIRNET_ARTIFACTS_DIR': str(tmp_path),
            'GITHUB_ENV': str(tmp_path / 'github-env'),

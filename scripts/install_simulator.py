@@ -72,7 +72,7 @@ def main(argv=None):
     if os.environ.get('GITHUB_ENV'):
         with Path(os.environ['GITHUB_ENV']).open('a', encoding='utf-8') as output:
             output.write(f'CIRNET_SIMULATOR_ARTIFACT_MANIFEST={manifest}\n')
-    print(f'Installed cirnet-simulator==0.1.1 from selected SHA256 {digest}; manifest: {manifest}')
+    print(f'Installed cirnet-simulator==0.1.2 from selected SHA256 {digest}; manifest: {manifest}')
     return 0
 
 

@@ -7,8 +7,13 @@ permissions:
   contents: read
 env:
   PYTHONDONTWRITEBYTECODE: '1'
-  CIRNET_CONTRACTS_DEV_WHEEL_URL: ${{ vars.CIRNET_CONTRACTS_DEV_WHEEL_URL || vars.NETCIRCUIT_CONTRACTS_DEV_WHEEL_URL }}
-  CIRNET_CONTRACTS_DEV_WHEEL_SHA256: ${{ vars.CIRNET_CONTRACTS_DEV_WHEEL_SHA256 || vars.NETCIRCUIT_CONTRACTS_DEV_WHEEL_SHA256 }}
+  CIRNET_CONTRACTS_DEV_WHEEL_URL: https://api.github.com/repos/cirnetlab/cirnet-contracts/releases/assets/712718400
+  CIRNET_CONTRACTS_DEV_WHEEL_SHA256: 61009f539e672cd6bdd799c608d30273f2e6988ad429147b2efa8e3873d51c08
+  CIRNET_CONTRACTS_WHEEL_URL: https://api.github.com/repos/cirnetlab/cirnet-contracts/releases/assets/712718253
+  CIRNET_CONTRACTS_WHEEL_SHA256: 7b092af5817b0e15f02f9f5f292a8e1b20fe1d512600f9c0260d05a58ddaaf42
+  CIRNET_SIMULATOR_WHEEL_URL: https://api.github.com/repos/cirnetlab/cirnet-simulator/releases/assets/712729983
+  CIRNET_SIMULATOR_WHEEL_SHA256: f467ae9ae23657179ca9bca53d83a2306131c800853072bd525df6f1b3eea77e
+  CIRNET_SIMULATOR_WHEEL_FILENAME: cirnet_simulator-0.1.2-py3-none-any.whl
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -37,29 +42,28 @@ jobs:
             echo "PYTHONDONTWRITEBYTECODE=1"
             echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)"
           } >> "$GITHUB_ENV"
-      - name: Install the locked closure and build pinned dependency wheels
+      - name: Install the locked closure and selected 0.1.2 dependency wheels
+        env:
+          CIRNET_ARTIFACTS_TOKEN: ${{ secrets.CIRNET_ARTIFACTS_READ_TOKEN || secrets.NETCIRCUIT_ARTIFACTS_READ_TOKEN }}
         run: |
           python -m pip download --require-hashes --only-binary=:all: -r requirements-verification.lock --dest "$CIRNET_ARTIFACTS_SESSION/hw-leaf-wheelhouse"
           python -m pip install --require-hashes --only-binary=:all: --no-index --find-links "$CIRNET_ARTIFACTS_SESSION/hw-leaf-wheelhouse" -r requirements-verification.lock
-          contracts_manifest="$(python -B scripts/build_ci_dependency.py Contracts)"
-          simulator_manifest="$(python -B scripts/build_ci_dependency.py Simulator)"
-          python scripts/install_contracts.py --manifest "$contracts_manifest"
-          python scripts/install_simulator.py --manifest "$simulator_manifest"
-          echo "CIRNET_CONTRACTS_ARTIFACT_MANIFEST=$contracts_manifest" >> "$GITHUB_ENV"
+          python -B scripts/install_contracts.py
+          python -B scripts/install_simulator.py
       - name: Build and verify the installed Hardware product
         shell: bash
         run: |
           python -m build --no-isolation --outdir "$CIRNET_ARTIFACTS_SESSION/hw-leaf-dist"
-          python -m pip install --no-index --no-deps --force-reinstall "$CIRNET_ARTIFACTS_SESSION/hw-leaf-dist/cirnet_hardware_service-0.1.1-py3-none-any.whl"
+          python -m pip install --no-index --no-deps --force-reinstall "$CIRNET_ARTIFACTS_SESSION/hw-leaf-dist/cirnet_hardware_service-0.1.2-py3-none-any.whl"
           python -m pip check
-          python scripts/check_installed.py --wheel "$CIRNET_ARTIFACTS_SESSION/hw-leaf-dist/cirnet_hardware_service-0.1.1-py3-none-any.whl"
+          python scripts/check_installed.py --wheel "$CIRNET_ARTIFACTS_SESSION/hw-leaf-dist/cirnet_hardware_service-0.1.2-py3-none-any.whl"
           (cd "$CIRNET_ARTIFACTS_SESSION/hw-leaf-dist" && sha256sum ./*.whl ./*.tar.gz > SHA256SUMS)
           cd "$CIRNET_ARTIFACTS_SESSION"
           python -I -B -m pytest "$GITHUB_WORKSPACE/tests" --basetemp "$CIRNET_ARTIFACTS_SESSION/hw-leaf-pytest"
       - name: Upload versioned artifacts for review
         uses: actions/upload-artifact@v4
         with:
-          name: hardware-service-0.1.1
+          name: cirnet-hardware-v0.1.2
           path: ${{ env.CIRNET_ARTIFACTS_SESSION }}/hw-leaf-dist/*
           if-no-files-found: error
       - name: Clean this owned verification session

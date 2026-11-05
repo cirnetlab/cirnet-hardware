@@ -1,5 +1,19 @@
 # Hardware verification and external artifacts
 
+## 2026-11-05 Hardware 0.1.2 candidate
+
+Native Windows verification at UTC+07:00 used an external export of the
+uncommitted candidate based on `2a41c0c00ed862621877952ae4b6d84ba66d790d`,
+CPython 3.14.4, and the exact canonical Contracts and Simulator 0.1.2 wheels.
+The wheel built from the candidate sdist matched a separate source wheel build
+byte for byte. The exact installed wheel provenance, `pip check`, and all 126
+Hardware tests passed, including real loopback RPC and spawned workers.
+Actionlint 1.7.12 passed the workflow. Raw output used the external session
+owned by `cirnet-release-014-20261105`. The pytest log SHA256 is
+`edface42357f3d18671483f9232599c3667bde4014cbc90001131e21fd4941d5`.
+These results cover the local candidate. Release artifacts require a separate
+build from the actual committed source.
+
 ## 2026-11-05 Lowercase repository paths
 
 The pinned Contracts and Simulator commits are unchanged. GitHub regenerated
@@ -45,15 +59,15 @@ Actions and physical hardware verification are NOT_RUN for this policy change.
 Historical results below retain their recorded Node versions. Evidence was
 inspected in the shared external session owned by `cirnet-node26-compat-20261105`.
 
-Current repository identity is [cirnetlab/cirnet-hardware](https://github.com/cirnetlab/cirnet-hardware). Dated extraction and provenance records remain valid. Current-source CI builds the renamed Contracts and matching Simulator wheels from the exact Git commits and SHA256 source archives in `integration/ci-source-dependencies.json`. Keep immutable v0.1.1 source/tag/artifact provenance separate from candidates rebuilt after documentation or package metadata changes.
+Current repository identity is [cirnetlab/cirnet-hardware](https://github.com/cirnetlab/cirnet-hardware). Dated extraction and provenance records remain valid. Current-source CI selects exact Contracts and Simulator 0.1.2 wheels by immutable URL and SHA256. The Git archive pins in `integration/ci-source-dependencies.json` reproduce the recorded 0.1.1 dependency builds. Keep immutable v0.1.1 source/tag/artifact provenance separate from candidates rebuilt after documentation or package metadata changes.
 
 Create logs, raw JSON, screenshots, traces, exports, environments and diagnostic output outside every checkout, worktree and Git administration directory from the start. Only Markdown verification evidence belongs in this repository. Preserve approved source assets, fixtures, historical evidence and licenses. Build caches/egg-info are compilation outputs, not diagnostic evidence; do not package them.
 
-DEV source uses `cirnet-artifact-paths` and `cirnet_artifact_paths`. The reviewed release lock still selects immutable `netcircuit-artifact-paths==1.0.0a1`; adapters support that exact wheel and Node implementation until a new artifact is reviewed. `scripts/bootstrap_contract_tools.py` verifies wheel/Node digests from `integration/contracts-version.json` before the first allocation, publishes the owning session/context and cleanup CLI before pip, and materializes only the verified allocator as a compilation cache. No consumer owns another path-validation implementation. Node and Git are required; CI selects Node 26 LTS.
+Current verification selects `cirnet-artifact-paths==1.0.0a1` and its `cirnet_artifact_paths` module. `scripts/bootstrap_contract_tools.py` verifies wheel/Node digests from `integration/contracts-version.json` before the first allocation, publishes the owning session/context and cleanup CLI before pip, and materializes only the verified allocator as a compilation cache. No consumer owns another path-validation implementation. Node and Git are required; CI selects Node 26 LTS.
 
 Before a cross-repository allocation, set `CIRNET_ARTIFACTS_CONTEXT` to JSON containing an explicit owner and all participating absolute Git roots. Keep that exact context/session through children and cleanup. Standalone verification needs only this repository. An exported source product inside a session remains an export, not a Git root. Denied output or Git enumeration fails closed; never fall back into source. Bootstrap pip and later child processes use session-owned TEMP/TMP/TMPDIR and caches. Set external defaults before any application import in integration.
 
-Use a fresh external environment, the SHA256-locked complete third-party closure, and reviewed wheel manifests for `cirnet-contracts==0.1.1` and a Simulator 0.1.1 build that pins that distribution. No sibling sources, editable installation, unpinned latest or root codegen is supported. Build `--no-isolation` after installing locked build requirements. Inspect wheel/sdist members and licenses, then force-install the exact candidate wheel with `--no-deps`, run `pip check`, and bind `scripts/check_installed.py --wheel ABSOLUTE_WHEEL` to its archive digest, metadata, payload and RECORD. Test from an external CWD with `python -I -B -m pytest ABSOLUTE_PRODUCT/tests --basetemp SESSION/hw-leaf-pytest`; test helpers remain spawn-importable without exposing product source. Cacheprovider stays disabled. Pass `-B` explicitly because isolated mode ignores the `PYTHONDONTWRITEBYTECODE` environment variable.
+Use a fresh external environment, the SHA256-locked complete third-party closure, and reviewed wheel manifests for `cirnet-contracts==0.1.2` and a Simulator 0.1.2 build that pins that distribution. No sibling sources, editable installation, unpinned latest or root codegen is supported. Build `--no-isolation` after installing locked build requirements. Inspect wheel/sdist members and licenses, then force-install the exact candidate wheel with `--no-deps`, run `pip check`, and bind `scripts/check_installed.py --wheel ABSOLUTE_WHEEL` to its archive digest, metadata, payload and RECORD. Test from an external CWD with `python -I -B -m pytest ABSOLUTE_PRODUCT/tests --basetemp SESSION/hw-leaf-pytest`; test helpers remain spawn-importable without exposing product source. Cacheprovider stays disabled. Pass `-B` explicitly because isolated mode ignores the `PYTHONDONTWRITEBYTECODE` environment variable.
 
 For release acceptance, export the reviewed source into the owned session, prove the sdist builds without sibling source, prove repeat wheel bytes with the same `SOURCE_DATE_EPOCH`, and install the full closure offline using `--require-hashes --only-binary=:all: --no-index --find-links ABSOLUTE_WHEELHOUSE`. Distinguish fresh uncommitted exports from committed clean checkout evidence. Retain exact first-party hashes/version/source fingerprints separately for release review. Test no-driver unavailable, guarded lifecycle/freshness/revocation, real loopback RPC/NCAP and actual spawned execution; Remote additionally verifies API leases/quarantine and integration against the same installed wheel.
 

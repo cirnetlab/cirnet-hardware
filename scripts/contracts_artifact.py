@@ -16,7 +16,7 @@ import sys
 import subprocess
 from zipfile import ZipFile
 
-VERSION = '0.1.1'
+VERSION = '0.1.2'
 NAME = 'cirnet-contracts'
 LEGACY_NAME = 'netcircuit-contracts'
 SHARED_NAMESPACE_ERROR = (

@@ -2,7 +2,7 @@
 
 Repository: [cirnetlab/cirnet-hardware](https://github.com/cirnetlab/cirnet-hardware). Current distributions and settings use CIRNET names. Legacy `NETCIRCUIT_*` settings and RPC routes remain compatible; canonical settings take precedence.
 
-Independent `cirnet-hardware-service==0.1.1`, Python >=3.11. The `hardware_service` namespace owns local-only Hardware RPC 2.0, virtual/physical stations and private FPGA transport. The canonical service route is `cirnet.hardware.v2.HardwareService`; the generated Contracts bindings also register the legacy `netcircuit.hardware.v2.HardwareService` route. New clients retry the legacy route only on `UNIMPLEMENTED`. Runtime consumes exact `cirnet-contracts==0.1.1` and `cirnet-simulator==0.1.1` wheels. No API implementation or sibling checkout is needed. Revalidate the existing immutable `v0.1.1` artifacts under the current repository URL while retaining their original source revisions and SHA256. Compare candidates from changed source separately; changed published bytes or tags require an explicit release decision and must respect immutability. Record the selected artifacts and consumer access in the system manifest.
+Independent `cirnet-hardware-service==0.1.2`, Python >=3.11. The `hardware_service` namespace owns local-only Hardware RPC 2.0, virtual/physical stations and private FPGA transport. The canonical service route is `cirnet.hardware.v2.HardwareService`; the generated Contracts bindings also register the legacy `netcircuit.hardware.v2.HardwareService` route. New clients retry the legacy route only on `UNIMPLEMENTED`. Runtime consumes exact `cirnet-contracts==0.1.2` and `cirnet-simulator==0.1.2` wheels. No API implementation or sibling checkout is needed. Revalidate the existing immutable `v0.1.1` artifacts under the current repository URL while retaining their original source revisions and SHA256. Compare candidates from changed source separately; changed published bytes or tags require an explicit release decision and must respect immutability. Record the selected artifacts and consumer access in the system manifest.
 
 Canonical [Lab-First v3.1 architecture](https://github.com/cirnetlab/cirnet-remote/blob/0d038c7aed15798696223558b4e58f5ffe926aa9/docs/ARCHITECTURE.md), [physical safety authority](https://github.com/cirnetlab/cirnet-remote/blob/0d038c7aed15798696223558b4e58f5ffe926aa9/docs/PHYSICAL_LAB_SAFETY.md) and approved M0 remain owned by Remote. The pinned authority revision is unchanged by the repository rename. Safety, topology and correctness are independent. Safe unknown or mismatched components do not become unsafe by identity alone.
 
@@ -14,8 +14,7 @@ Run the independently installed service with `python -m hardware_service.server`
 
 ## Build and verify
 
-Build the current source in a fresh environment with reviewed
-`cirnet-contracts==0.1.1` and Simulator wheels built against that dependency.
+Build the current source in a fresh environment with reviewed `cirnet-contracts==0.1.2` and `cirnet-simulator==0.1.2` wheels.
 The immutable Hardware release keeps its original `netcircuit-contracts==0.1.1`
 dependency and uses a separate environment. Both Contracts distributions install
 the `contracts` namespace.
@@ -37,9 +36,9 @@ python scripts/install_contracts.py
 python scripts/install_simulator.py --manifest $env:CIRNET_SIMULATOR_ARTIFACT_MANIFEST
 $env:SOURCE_DATE_EPOCH = git log -1 --format=%ct
 python -m build --no-isolation --outdir "$env:CIRNET_ARTIFACTS_SESSION/hw-leaf-dist"
-python -m pip install --no-index --no-deps --force-reinstall "$env:CIRNET_ARTIFACTS_SESSION/hw-leaf-dist/cirnet_hardware_service-0.1.1-py3-none-any.whl"
+python -m pip install --no-index --no-deps --force-reinstall "$env:CIRNET_ARTIFACTS_SESSION/hw-leaf-dist/cirnet_hardware_service-0.1.2-py3-none-any.whl"
 python -m pip check
-python scripts/check_installed.py --wheel "$env:CIRNET_ARTIFACTS_SESSION/hw-leaf-dist/cirnet_hardware_service-0.1.1-py3-none-any.whl"
+python scripts/check_installed.py --wheel "$env:CIRNET_ARTIFACTS_SESSION/hw-leaf-dist/cirnet_hardware_service-0.1.2-py3-none-any.whl"
 $product = (Get-Location).Path
 Push-Location $env:CIRNET_ARTIFACTS_SESSION
 python -I -B -m pytest "$product/tests" --basetemp "$env:CIRNET_ARTIFACTS_SESSION/hw-leaf-pytest"
@@ -48,13 +47,13 @@ Pop-Location
 node scripts/artifact-paths.mjs --cleanup $env:CIRNET_ARTIFACTS_SESSION
 ```
 
-CI builds the renamed Contracts and matching Simulator wheels from the commits and SHA256 source archives pinned in `integration/ci-source-dependencies.json`. Each build uses its hash-locked toolchain inside the owned external session. Local installs use explicit reviewed wheel selections. The independent DEV wheel still uses its configured URL and SHA256. Public published assets support anonymous access; authenticated CI/draft access still uses the selected-repository read token. Only GitHub release-asset API requests receive credentials; redirects do not. Missing pins fail closed. It downloads the locked closure, installs it offline, builds wheel/sdist without PEP 517 network isolation, force-installs the selected Hardware archive, checks version/RECORD/digest/import provenance and runs tests from an external CWD. The pytest prepend mode exposes only test-local helpers for real spawn imports; it does not expose product source. No automatic publication occurs. Hosted CI access and execution are separate evidence.
+CI selects the reviewed Contracts and Simulator 0.1.2 wheels with `CIRNET_CONTRACTS_WHEEL_URL`, `CIRNET_CONTRACTS_WHEEL_SHA256`, `CIRNET_SIMULATOR_WHEEL_URL` and `CIRNET_SIMULATOR_WHEEL_SHA256`. The prior Git archive pins in `integration/ci-source-dependencies.json` remain available to reproduce their recorded 0.1.1 builds. Local installs use explicit reviewed wheel selections. The independent DEV wheel still uses its configured URL and SHA256. Public published assets support anonymous access; authenticated CI/draft access still uses the selected-repository read token. Only GitHub release-asset API requests receive credentials; redirects do not. Missing pins fail closed. It downloads the locked closure, installs it offline, builds wheel/sdist without PEP 517 network isolation, force-installs the selected Hardware archive, checks version/RECORD/digest/import provenance and runs tests from an external CWD. The pytest prepend mode exposes only test-local helpers for real spawn imports; it does not expose product source. No automatic publication occurs. Hosted CI access and execution are separate evidence.
 
-The existing immutable [v0.1.1 release](https://github.com/cirnetlab/cirnet-hardware/releases/tag/v0.1.1) retains its original tag, artifact bytes and source provenance. A build from renamed current-source documentation/metadata is a separate candidate even when its package version is 0.1.1; it must not replace those published bytes or be attributed to the original tag. See [release verification work](docs/M6_RELEASE_WORK.md).
+The existing immutable [v0.1.1 release](https://github.com/cirnetlab/cirnet-hardware/releases/tag/v0.1.1) retains its original tag, artifact bytes and source provenance. The 0.1.2 wheel and sdist belong to `cirnet-hardware-v0.1.2`, tagged `v0.1.2` after release acceptance. See [release verification work](docs/M6_RELEASE_WORK.md).
 
 ## Compatibility and rollback
 
-The eight non-version runtime modules preserve Remote revision `0d038c7aed15798696223558b4e58f5ffe926aa9` byte-for-byte; only package `__version__` becomes 0.1.1. Graph 1.0/1.1/1.2, RPC 2.0, NCAP v1, station/instrument semantics and Simulator backend identity remain unchanged. Logical FPGA scaffold and physical ABI are independent version domains.
+The eight non-version runtime modules preserve Remote revision `0d038c7aed15798696223558b4e58f5ffe926aa9` byte-for-byte; package `__version__` is 0.1.2. Graph 1.0/1.1/1.2, RPC 2.0, NCAP v1, station/instrument semantics and Simulator backend identity remain unchanged. Logical FPGA scaffold and physical ABI are independent version domains.
 
 Rollback stops admission, drains/Stops through acknowledged safe cleanup or quarantine, restores the prior compatible Hardware/Contracts/Simulator wheels and consumer pins, then restarts the service. Keep database, captures, leases and quarantine; never replay Start. Package rollback in an isolated environment does not prove electrical shutdown or live deployment. Original source and history remain preserved in Remote; the integrated release process verifies target ancestry, exact artifact/source revisions and publication.
 
