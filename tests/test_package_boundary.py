@@ -40,7 +40,9 @@ def test_selected_installed_hardware_wheel_and_dependencies_have_provenance():
     assert data['contracts']['name'] == 'cirnet-contracts'
     assert data['contracts']['version'] == '0.1.2'
     assert data['simulator']['version'] == '0.1.2'
-    assert data['simulator']['owned_files'] == 10
+    simulator_files = {item.as_posix() for item in distribution('cirnet-simulator').files}
+    native_modules = {'cirnet_sim/cpp_backend.py', 'cirnet_sim/cpp_dc.py'}
+    assert data['simulator']['owned_files'] == 10 + len(simulator_files & native_modules)
 
 
 def test_product_source_shadowing_is_rejected():

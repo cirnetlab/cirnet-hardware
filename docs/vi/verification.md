@@ -43,6 +43,25 @@ try {
 
 Bước kiểm tra wheel đối chiếu tệp đã cài, siêu dữ liệu và RECORD với gói đã chọn. Kiểm thử cách ly chạy RPC qua loopback, kiểm tra NCAP, trạng thái thiếu trình điều khiển vật lý, điều kiện vòng đời và tiến trình con chạy trạm ảo. Trước khi phát hành, kiểm tra có thể dựng từ sdist độc lập với bộ phụ thuộc đã khóa, rồi so sánh từng byte của wheel ở cùng `SOURCE_DATE_EPOCH`. Bản xuất mã nguồn cục bộ và bản dựng từ commit phát hành có nguồn gốc riêng.
 
+## Worker native giai đoạn 1
+
+Dùng môi trường có wheel Hardware và Simulator do manifest ứng viên chọn,
+wheel Contracts đã ghim, cùng pytest và psutil từ bộ công cụ kiểm chứng của
+Remote. Đặt `CIRNET_NATIVE_STAGE1_CANDIDATE` thành đường dẫn tuyệt đối tới
+manifest ứng viên. Chạy lệnh sau từ phiên do mình sở hữu.
+
+~~~powershell
+python -I -B -m pytest -q C:/absolute/hardware/tests/native_cpp_lifecycle_cases.py --basetemp "$env:CIRNET_ARTIFACTS_SESSION/hardware-native-lifecycle"
+~~~
+
+Bộ kiểm tra đối chiếu mã băm artifact và tệp đã cài, sau đó gửi yêu cầu gRPC
+thật qua loopback đến Hardware có tiến trình con C++. Test kiểm soát tiến
+trình hoặc thời điểm giao phản hồi để thử Stop lúc hết slot, reset, crash,
+timeout và phản hồi đến trong lúc Stop. Mỗi ca xác nhận worker đã thoát,
+capture cũ không xuất hiện, phiên phục hồi trả lại đúng byte NCAP và worker
+thay thế dừng khi dịch vụ dọn dẹp. Thời gian trong các ca tiêm lỗi được ghi
+riêng với số đo hiệu năng.
+
 Ghi kết quả và phạm vi vào Markdown. Kiểm tra bằng chứng thô và xác nhận các tiến trình thuộc phiên đã dừng trước khi chỉ dọn phiên do mình sở hữu. Giữ riêng các bản dựng đã chọn để bàn giao phát hành.
 
 ~~~powershell

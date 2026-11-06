@@ -48,11 +48,16 @@ class LifecycleRpc:
             else:
               with station._lock:
                 # Recheck ownership inside the same lock as the operation.
-                self._station(target)
+                if self._station(target) is not station:
+                    raise HardwareError('RESOURCE_CONFLICT')
                 result = action(station, target)
+                if (action.__name__ == 'stop_execution' and result.get('accepted') is True
+                        and station.get_capabilities().mode == 'simulation' and station.state == 'SAFE_STATE'):
+                    key = (target.station_id, target.experiment_id)
+                    with self.lock:
+                        if self.sessions.get(key) is station:
+                            self.sessions.pop(key)
             code = result.get('code', 'OK')
-            if station.get_capabilities().mode=='simulation' and station.state=='SAFE_STATE' and action.__name__=='stop_execution':
-                with self.lock: self.sessions.pop((target.station_id,target.experiment_id),None)
             if code not in self.pb.ErrorCode.keys():
                 code = 'DRIVER_ERROR'
             capture_payload = b''

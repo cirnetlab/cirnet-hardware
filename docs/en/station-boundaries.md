@@ -8,11 +8,20 @@ Hardware owns local RPC 2.0, station lifecycles and private FPGA transport. Remo
 
 | Station | Current behavior |
 | --- | --- |
-| Virtual | Each experiment has an independent session. Bounded spawned workers run the selected Simulator backend. The `legacy` backend supplies four Logic Analyzer channels and zero Scope or Generator channels. `ngspice` reports unavailable. Stop and reset invalidate pending generations. |
+| Virtual | Each experiment has an independent session. The default `legacy` backend uses bounded spawned Python workers. The experimental `cpp` backend requires a matching Simulator artifact and uses its supervised native workers. Both expose four Logic Analyzer channels and zero Scope or Generator channels. `ngspice` reports unavailable. |
 | Physical | Missing driver reports `OFFLINE` or unavailable, zero slots and channels, and `hardware_applied=false`. Serial and USB-SPI remain placeholder adapters. |
 
 Physical Start requires a fresh scan and safety result, a matching executable station and experiment plan, observed endpoint and resource coverage, applied routing, guarded power and armed capture. Safety, topology and functional correctness are separate decisions. An unknown component or a topology mismatch alone does not determine electrical safety.
 
 Digital NCAP bytes travel in `OperationReply.capture_payload`. The accompanying `result_json` contains metadata. Software tests, test drivers and RTL simulation do not certify electrical protection, a hardware ABI, real acquisition or timing.
+
+Select the experimental backend with `CIRNET_SIMULATION_BACKEND=cpp` and the
+reviewed Simulator worker path and digest in `CIRNET_SIM_CPP_WORKER` and
+`CIRNET_SIM_CPP_WORKER_SHA256`. Set the same `CIRNET_SIMULATION_WORKERS` in
+Remote and Hardware. Native Start rejects excess work immediately, leaving RPC
+threads for Stop and reset. Both invalidate pending generations. For a native
+job in flight, safe acknowledgement waits for confirmed cancellation and
+cleanup. Hardware rejects the acknowledgement if it cannot confirm cleanup,
+leaving the owner fenced so Remote can quarantine the lease.
 
 Rollback stops admission and drains through acknowledged safe cleanup or quarantine before restoring matching Hardware, Contracts and Simulator artifacts and consumer pins. Preserve the database, captures, leases and quarantine. Never replay Start during rollback.

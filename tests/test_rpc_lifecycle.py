@@ -54,6 +54,36 @@ def test_stale_physical_start_rechecks_owner_under_operation_lock():
     assert s._experiment_id=='e2' and s.state=='ARMED'
 
 
+def test_stale_virtual_stop_cannot_retire_a_replacement_session(monkeypatch):
+    from contracts.generated import rpc_v2_pb2 as pb
+    from hardware_service.rpc import LifecycleRpc
+    from hardware_service.station.virtual import VirtualHardwareStation
+    from test_virtual_execution import arm_station
+
+    station = VirtualHardwareStation('virtual')
+    service = LifecycleRpc({'virtual': station}, pb)
+    retired = station.new_session()
+    active = arm_station(station.new_session(), 'e1')
+    service.sessions[('virtual', 'e1')] = active
+    target = pb.Target(station_id='virtual', experiment_id='e1')
+    lookup = service._station
+    first = True
+
+    def race(target):
+        nonlocal first
+        if first:
+            first = False
+            return retired
+        return lookup(target)
+
+    monkeypatch.setattr(service, '_station', race)
+    reply = service.StopExecution(target, None)
+    assert reply.accepted is False
+    assert reply.code == pb.RESOURCE_CONFLICT
+    assert service.sessions[('virtual', 'e1')] is active
+    assert active.state == 'ARMED'
+
+
 def test_physical_rpc_rejects_virtual_contact_graph_even_when_structurally_valid():
     from contracts.generated import rpc_v2_pb2 as pb
     from hardware_service.rpc import LifecycleRpc

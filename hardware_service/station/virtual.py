@@ -1,17 +1,65 @@
 from copy import deepcopy
-from concurrent.futures import ProcessPoolExecutor, TimeoutError
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, TimeoutError
 from multiprocessing import get_context
-from threading import RLock
+from threading import Event, Lock, RLock
 from jsonschema import ValidationError
 from contracts.runtime_config import simulation_worker_count
 from contracts.validation import validate
 from contracts.instrument_validation import validate_plan_instruments
 from hardware_service.models import BreadboardCapability, StationCapabilities
 from hardware_service.station.base import HardwareStation, HardwareError, StationState as S, serialized
+from cirnet_sim import backends as simulator_backends
 from cirnet_sim.backends import (SimulationError, run_plan, compile_graph,
     select_backend_id, get_backend_descriptor)
 
+NATIVE_STOP_TIMEOUT_SECONDS = 2
+_NATIVE_ERRORS = {
+    'BACKEND_UNAVAILABLE': 'HARDWARE_UNAVAILABLE',
+    'DRIVER_ERROR': 'DRIVER_ERROR',
+    'PROTOCOL_MISMATCH': 'PROTOCOL_MISMATCH',
+    'RESOURCE_CONFLICT': 'RESOURCE_CONFLICT',
+    'SAFE_STATE_FAILED': 'DRIVER_ERROR',
+    'TIMEOUT': 'TIMEOUT',
+}
+
+
+class _NativeJobs:
+    """Run native calls in Hardware so control can signal their owner directly."""
+
+    def __init__(self, workers):
+        self._limit = workers
+        self._executor = ThreadPoolExecutor(max_workers=workers, thread_name_prefix='cirnet-cpp')
+        self._lock = Lock()
+        self._jobs = {}
+
+    def submit(self, *args):
+        with self._lock:
+            # A completed future has already returned its worker lane even
+            # if its callback has not yet removed it from this registry.
+            if sum(not job.done() for job in self._jobs) >= self._limit:
+                raise HardwareError('RESOURCE_CONFLICT')
+            cancel = Event()
+            future = self._executor.submit(run_plan, *args, cancel=cancel)
+            self._jobs[future] = cancel
+        future.add_done_callback(self._discard)
+        return future, cancel
+
+    def _discard(self, future):
+        with self._lock:
+            self._jobs.pop(future, None)
+
+    def shutdown(self):
+        with self._lock:
+            for cancel in self._jobs.values():
+                cancel.set()
+        self._executor.shutdown(wait=True, cancel_futures=True)
+        close_workers = getattr(simulator_backends, 'close_native_workers', None)
+        if close_workers is not None:
+            close_workers()
+
+
 _pool=None
+_native_pool=None
 _pool_lock=RLock()
 
 def simulation_pool():
@@ -22,13 +70,29 @@ def simulation_pool():
         return _pool
 
 def close_simulation_pool():
-    global _pool
+    global _pool, _native_pool
     with _pool_lock:
-        if _pool:
-            try:
-                _pool.shutdown(wait=True,cancel_futures=True)
-            finally:
-                _pool=None
+        try:
+            if _native_pool is not None:
+                _native_pool.shutdown()
+        finally:
+            _native_pool=None
+            if _pool:
+                try:
+                    _pool.shutdown(wait=True,cancel_futures=True)
+                finally:
+                    _pool=None
+
+
+def _submit_execution(native, *args):
+    global _native_pool
+    # Keep creation and submission ordered with service shutdown.
+    with _pool_lock:
+        if not native:
+            return simulation_pool().submit(run_plan, *args), None
+        if _native_pool is None:
+            _native_pool = _NativeJobs(simulation_worker_count())
+        return _native_pool.submit(*args)
 
 class VirtualHardwareStation(HardwareStation):
     """Independent digital session backed by bounded process-worker execution."""
@@ -42,6 +106,7 @@ class VirtualHardwareStation(HardwareStation):
         self._virtual_plan=None
         self._generation=0
         self._future=None
+        self._cancel=None
 
     def new_session(self):
         """Create independent experiment state with this station's backend."""
@@ -56,12 +121,12 @@ class VirtualHardwareStation(HardwareStation):
         analyzer=backend.logic_analyzer_channels if available else 0
         generator=backend.generator_channels if available else 0
         scope=backend.oscilloscope_channels if available else 0
-        legacy=backend.identity.id=='legacy' and available
+        digital_events=backend.identity.id in ('legacy', 'cpp') and available
         return StationCapabilities(self.station_id, "simulation", available,
             virtual_digital=available and backend.digital,virtual_analog=available and backend.analog,
             breadboards=(BreadboardCapability("BB0"), BreadboardCapability("BB1")),
-            hardware_profile_version="virtual-1.0" if legacy else "UNAVAILABLE",
-            firmware_version="virtual-events-1.0" if legacy else "UNAVAILABLE",
+            hardware_profile_version="virtual-1.0" if digital_events else "UNAVAILABLE",
+            firmware_version="virtual-events-1.0" if digital_events else "UNAVAILABLE",
             instrument_capabilities={"logic_analyzer":{"channels":analyzer,"runtime_reconfiguration_supported":False,"status":"digital-events" if analyzer else "NOT_IMPLEMENTED"},
                          "generator":{"channels":generator,"runtime_reconfiguration_supported":False,"status":"available" if generator else "NOT_IMPLEMENTED"},
                          "oscilloscope":{"channels":scope,"runtime_reconfiguration_supported":False,"status":"available" if scope else "NOT_IMPLEMENTED"}})
@@ -156,7 +221,6 @@ class VirtualHardwareStation(HardwareStation):
             if experiment_id is not None and self._experiment_id!=experiment_id:
                 raise HardwareError('RESOURCE_CONFLICT')
             self._require_state(S.ARMED)
-            self._state=S.RUNNING
             generation=self._generation
             aliases=self._aliases
             config=deepcopy(self._plan['capture_config'])
@@ -164,23 +228,24 @@ class VirtualHardwareStation(HardwareStation):
             vectors=[{'time_ns':v['time_ns'],'inputs':{aliases.get(s,s):x for s,x in v['inputs'].items()}} for v in self._plan['test_vectors']]
             clock=deepcopy(self._plan['clock_config'])
             if clock: clock['signal']=aliases.get(clock['signal'],clock['signal'])
-            # Creation/submission and shutdown share a lock; close cannot shut
-            # down the returned executor between lookup and task submission.
-            with _pool_lock:
-                self._future=simulation_pool().submit(run_plan,self._virtual_plan,config,vectors,clock,deepcopy(self._inputs))
-            future=self._future
+            self._future, self._cancel = future, cancel = _submit_execution(
+                self._backend_id == 'cpp', self._virtual_plan, config, vectors, clock, deepcopy(self._inputs))
+            self._state=S.RUNNING
         try: capture=future.result(timeout=10)
         except TimeoutError:
+            if cancel is not None:
+                cancel.set()
             future.cancel()
             with self._lock:
                 if generation!=self._generation: raise HardwareError('INVALID_STATE') from None
                 self._state=S.FAULT
             raise HardwareError('TIMEOUT') from None
-        except SimulationError:
+        except SimulationError as error:
+            code = _NATIVE_ERRORS.get(str(error), 'UNEXECUTABLE') if cancel is not None else 'UNEXECUTABLE'
             with self._lock:
                 if generation!=self._generation: raise HardwareError('INVALID_STATE') from None
                 self._state=S.FAULT
-            raise HardwareError('UNEXECUTABLE') from None
+            raise HardwareError(code) from None
         except Exception:
             with self._lock:
                 if generation!=self._generation: raise HardwareError('INVALID_STATE') from None
@@ -192,6 +257,7 @@ class VirtualHardwareStation(HardwareStation):
             for sample in capture['samples']: sample['signal']=reverse.get(sample['signal'],sample['signal'])
             self._capture=capture
             self._future=None
+            self._cancel=None
             return self._reply()
 
     @serialized
@@ -202,12 +268,35 @@ class VirtualHardwareStation(HardwareStation):
     @serialized
     def enter_safe_state(self):
         self._generation+=1
-        if self._future: self._future.cancel()
-        self._future=None
         self._plan=None
+        if self._cancel is not None:
+            self._capture=None
+            self._cancel_native_execution()
+        elif self._future is not None:
+            self._future.cancel()
+        self._future=None
+        self._cancel=None
         self._experiment_id=None
         self._state=S.SAFE_STATE
         return self._reply(hardware_applied=False,mode="simulation")
+
+    def _cancel_native_execution(self):
+        self._cancel.set()
+        if self._future.cancel():
+            return
+        try:
+            # The provider never takes the station lock. A completed reply
+            # means the work ended; cancellation means the child was reaped.
+            self._future.result(timeout=NATIVE_STOP_TIMEOUT_SECONDS)
+            return
+        except SimulationError as error:
+            if str(error) != 'SAFE_STATE_FAILED':
+                return
+        except Exception:
+            # A timeout or an unknown worker failure does not establish safety.
+            pass
+        self._state=S.FAULT
+        raise HardwareError('DRIVER_ERROR') from None
 
     def stop_execution(self):
         return self.enter_safe_state()

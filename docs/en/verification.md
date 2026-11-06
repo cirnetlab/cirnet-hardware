@@ -43,6 +43,24 @@ try {
 
 The wheel check binds the installed files, metadata and RECORD to the selected archive. The isolated tests exercise loopback RPC, NCAP, unavailable physical drivers, guarded lifecycle and spawned virtual workers. Check the sdist can build independently with the locked closure, and compare wheel bytes at the same `SOURCE_DATE_EPOCH` before release. A local source export and a committed release build have separate provenance.
 
+## Stage 1 native worker
+
+Use a candidate environment with the manifest-selected Hardware and Simulator
+wheels, the pinned Contracts wheel, and pytest and psutil from the Remote
+verification toolchain. Set `CIRNET_NATIVE_STAGE1_CANDIDATE` to the absolute
+candidate manifest path. Run the following command from the owned session.
+
+~~~powershell
+python -I -B -m pytest -q C:/absolute/hardware/tests/native_cpp_lifecycle_cases.py --basetemp "$env:CIRNET_ARTIFACTS_SESSION/hardware-native-lifecycle"
+~~~
+
+The gate checks artifact hashes and installed payloads, then sends real
+loopback gRPC requests to Hardware with a C++ child. It controls the child
+process or reply timing to cover saturated Stop, reset, crash, timeout and a
+reply held during Stop. For each case it checks worker exit, empty stale
+capture, recovery with identical NCAP bytes and shutdown of the replacement
+worker. These controlled fault timings are separate from performance samples.
+
 Record the result and scope in Markdown. Inspect raw evidence and confirm owned workers have stopped before cleaning only the session you own. Preserve release candidates selected for handoff separately.
 
 ~~~powershell

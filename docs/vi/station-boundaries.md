@@ -8,11 +8,20 @@ Hardware phụ trách RPC cục bộ 2.0, vòng đời trạm và giao tiếp FP
 
 | Trạm | Hành vi hiện tại |
 | --- | --- |
-| Ảo | Mỗi thí nghiệm có phiên độc lập. Nhóm tiến trình con có giới hạn chạy backend Simulator đã chọn. Backend `legacy` cung cấp bốn kênh Logic Analyzer, không có kênh Scope hoặc Generator. `ngspice` báo không khả dụng. Stop và reset vô hiệu hóa kết quả đang chờ thuộc lượt chạy cũ. |
+| Ảo | Mỗi thí nghiệm có phiên độc lập. Backend mặc định `legacy` dùng nhóm tiến trình Python có giới hạn. Backend thử nghiệm `cpp` yêu cầu artifact Simulator tương thích và dùng các tiến trình native do Simulator giám sát. Cả hai cung cấp bốn kênh Logic Analyzer, không có kênh Scope hoặc Generator. `ngspice` báo không khả dụng. |
 | Vật lý | Khi thiếu trình điều khiển, trạm báo `OFFLINE` hoặc không khả dụng, số slot và kênh bằng 0, và `hardware_applied=false`. Bộ điều hợp Serial và USB-SPI mới là chỗ dành cho tích hợp sau này. |
 
 Start trên trạm vật lý đòi hỏi kết quả quét và an toàn còn hiệu lực, kế hoạch thực thi khớp trạm và thí nghiệm, đủ bằng chứng về điểm cuối và tài nguyên, định tuyến đã áp dụng, nguồn điện có bảo vệ và bộ thu đã sẵn sàng. An toàn, tô pô và tính đúng chức năng là các quyết định riêng. Chỉ riêng việc chưa nhận diện linh kiện hoặc tô pô không khớp chưa đủ để kết luận về an toàn điện.
 
 Dữ liệu NCAP số đi trong `OperationReply.capture_payload`. `result_json` đi kèm chứa siêu dữ liệu. Kiểm thử phần mềm, trình điều khiển thử nghiệm và mô phỏng RTL không chứng nhận bảo vệ điện, ABI phần cứng, thu nhận tín hiệu thật hoặc thời gian đáp ứng.
+
+Chọn backend thử nghiệm bằng `CIRNET_SIMULATION_BACKEND=cpp` và đặt đường dẫn
+cùng mã băm worker Simulator đã kiểm tra trong `CIRNET_SIM_CPP_WORKER` và
+`CIRNET_SIM_CPP_WORKER_SHA256`. Đặt cùng `CIRNET_SIMULATION_WORKERS` ở Remote
+và Hardware. Start native từ chối công việc vượt hạn mức ngay để dành luồng
+RPC cho Stop và reset. Cả hai vô hiệu hóa kết quả đang chờ thuộc lượt chạy cũ.
+Nếu tác vụ native còn chạy, Hardware chỉ xác nhận an toàn sau khi xác minh
+việc hủy và dọn dẹp. Nếu chưa thể xác minh, Hardware từ chối xác nhận và giữ
+ràng buộc chủ phiên để Remote có thể cách ly lease.
 
 Khi khôi phục phiên bản, dừng tiếp nhận yêu cầu và chờ xác nhận dọn dẹp an toàn hoặc cách ly trước khi khôi phục bộ artifact Hardware, Contracts và Simulator tương thích cùng các phiên bản được ghim ở bên tiêu thụ. Giữ cơ sở dữ liệu, bản ghi đo, quyền sử dụng trạm và trạng thái cách ly. Không phát lại Start trong quá trình khôi phục.

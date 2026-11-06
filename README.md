@@ -12,6 +12,11 @@ Physical Start requires fresh scan/safety, a matching executable station/experim
 
 Virtual legacy digital execution uses independent per-experiment sessions and bounded spawned workers. Current Logic Analyzer has four channels; Scope/Generator have zero. `CIRNET_SIMULATION_BACKEND=legacy` is the default. Each station snapshots its backend; compiled identity survives environment changes and worker boundaries. Reserved `ngspice` remains unavailable without fallback. Set `CIRNET_SIMULATION_WORKERS` identically in API and Hardware (default 4, positive integer). RPC reserves four additional control threads. Stop/reset invalidates pending generation results; shutdown waits for owned workers.
 
+With a matching Simulator candidate, the experimental `cpp` backend runs
+reviewed native workers with bounded admission and confirms cancellation before
+acknowledging an in-flight Stop. See [station boundaries](docs/en/station-boundaries.md)
+for configuration and quarantine behavior.
+
 Run the independently installed service with `python -m hardware_service.server`, default `127.0.0.1:50051`. `serve()` permits loopback/localhost or Unix sockets only. The browser never accesses it directly. Bindings come from installed Contracts; this product performs no generation. Genuine bounded digital NCAP is carried in `OperationReply.capture_payload`, separate from metadata-only `result_json`.
 
 ## Build and verify
