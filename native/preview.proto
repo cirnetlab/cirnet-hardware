@@ -1,0 +1,12 @@
+syntax = "proto3";
+package cirnet.hardware.internal.v1;
+
+message DescribeRequest {}
+message DescribeReply { uint32 version = 1; }
+message PreviewRequest { bytes graph_json = 1; }
+message PreviewReply { bytes payload_json = 1; }
+
+service SimulatorPreview {
+  rpc Describe(DescribeRequest) returns (DescribeReply);
+  rpc Preview(PreviewRequest) returns (PreviewReply);
+}

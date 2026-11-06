@@ -1,0 +1,37 @@
+[package]
+name = "cirnet-hardware-native"
+version = "0.1.2"
+edition = "2024"
+rust-version = "1.90"
+license-file = "LICENSE"
+description = "Local CIRNET Hardware RPC and virtual stations"
+repository = "https://github.com/cirnetlab/cirnet-hardware"
+build = "native/build.rs"
+
+[lib]
+path = "native/src/lib.rs"
+
+[[bin]]
+name = "cirnet-hardware"
+path = "native/src/main.rs"
+
+[dependencies]
+cirnet-contracts-native = { git = "https://github.com/cirnetlab/cirnet-contracts.git", rev = "e640f80b1199779659d3db7817fee16d13cc24c1", version = "=0.1.2" }
+prost = "=0.14.1"
+serde_json = { version = "=1.0.145", features = ["arbitrary_precision", "preserve_order"] }
+sha2 = "=0.10.9"
+tokio = { version = "=1.48.0", features = ["macros", "net", "rt-multi-thread", "signal", "sync", "time"] }
+tokio-stream = { version = "=0.1.17", features = ["net"] }
+tonic = { version = "=0.14.2", default-features = false, features = ["codegen", "router", "server"] }
+tonic-prost = "=0.14.2"
+
+[build-dependencies]
+cirnet-contracts-native = { git = "https://github.com/cirnetlab/cirnet-contracts.git", rev = "e640f80b1199779659d3db7817fee16d13cc24c1", version = "=0.1.2" }
+prost = "=0.14.1"
+prost-types = "=0.14.1"
+protoc-bin-vendored = "=3.2.0"
+tonic-prost-build = "=0.14.2"
+
+[[test]]
+name = "simulator_parity"
+path = "native/tests/simulator_parity.rs"
