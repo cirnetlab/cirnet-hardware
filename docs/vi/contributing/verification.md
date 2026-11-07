@@ -73,9 +73,20 @@ riêng với số đo hiệu năng.
 
 ## Ứng viên Hardware Rust
 
-Dùng Rust 1.90 trở lên và bộ nhớ đệm phụ thuộc theo khóa Cargo. Bản dựng
-Windows đã đo dùng Rust 1.90.0. Chuẩn bị bộ nhớ đệm ngoài bản sao kho trước
-khi chạy ngoại tuyến. Bản dựng native dùng `cirnet-contracts-native==0.1.2`
+Dùng bộ công cụ Rust và Cargo `1.99.1` đã ghim để kiểm chứng bản dựng native
+hiện tại. Trên Windows, dùng `x86_64-pc-windows-msvc`. Manifest của crate khai
+báo Rust `1.90` là phiên bản tối thiểu cho dự án sử dụng crate.
+[Phiên bản bộ công cụ](../../../rust-toolchain.toml) · [Manifest của crate](../../../Cargo.toml)
+
+Nếu Rustup chỉ có bí danh `stable`, kiểm tra `rustup run stable rustc -vV`
+và `rustup run stable cargo -vV`. Dùng `rustup run stable cargo` cho các
+bản dựng hiện tại khi bí danh trỏ tới 1.99.1 trên đúng host.
+
+Bản dựng Windows trong hồ sơ Gate 3 dùng Rust `1.90.0`.
+[Bằng chứng Gate 3 trên Windows](../history/stage-3-windows-verification.md)
+
+Chuẩn bị bộ nhớ đệm cho các phụ thuộc Cargo đã khóa bên ngoài bản sao kho
+trước khi chạy ngoại tuyến. Bản dựng native dùng `cirnet-contracts-native==0.1.2`
 tại commit `e640f80b1199779659d3db7817fee16d13cc24c1`. Đặt
 `CIRNET_CONTRACTS_ROOT`, `CIRNET_SIM_CPP_WORKER` và
 `CIRNET_SIM_CPP_WORKER_SHA256` theo [cấu hình ứng viên](../guides/getting-started.md#chạy-ứng-viên-hardware-rust).

@@ -72,9 +72,21 @@ worker. These controlled fault timings are separate from performance samples.
 
 ## Rust Hardware candidate
 
-Use Rust 1.90 or later and the locked Cargo dependency cache. The measured
-Windows build used Rust 1.90.0. Prepare the cache outside the checkout before
-running offline. The native build consumes `cirnet-contracts-native==0.1.2`
+Use the pinned Rust and Cargo `1.99.1` toolchain for current native
+verification. On Windows, use `x86_64-pc-windows-msvc`. The crate manifest
+declares Rust `1.90` as the minimum for consumers.
+[Toolchain pin](../../../rust-toolchain.toml) · [Crate manifest](../../../Cargo.toml)
+
+If Rustup has only the `stable` alias installed, check
+`rustup run stable rustc -vV` and `rustup run stable cargo -vV`. Use
+`rustup run stable cargo` for current builds while that alias resolves to
+1.99.1 on the required host.
+
+The recorded Windows Gate 3 build used Rust `1.90.0`.
+[Windows Gate 3 evidence](../history/stage-3-windows-verification.md)
+
+Prepare the locked Cargo dependency cache outside the checkout before running
+offline. The native build consumes `cirnet-contracts-native==0.1.2`
 from revision `e640f80b1199779659d3db7817fee16d13cc24c1`. Set
 `CIRNET_CONTRACTS_ROOT`, `CIRNET_SIM_CPP_WORKER`, and
 `CIRNET_SIM_CPP_WORKER_SHA256` as in the [candidate setup](../guides/getting-started.md#run-the-rust-hardware-candidate).

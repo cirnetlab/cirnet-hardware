@@ -23,6 +23,9 @@
 
 ### Changed
 
+- Pinned the native development toolchain to Rust and Cargo `1.99.1`. The
+  crate declares Rust `1.90` as the minimum for consumers.
+  [Verification guide](../en/contributing/verification.md#rust-hardware-candidate)
 - Moved canonical parser and Protobuf tests to Contracts. Hardware retains its
   installed package and runtime-boundary checks. [Test ownership change](https://github.com/cirnetlab/cirnet-hardware/commit/65dbf0a55d29026817ddf11458259ce312e94bc6)
 - Organized the release changelog by major and documented how to maintain
