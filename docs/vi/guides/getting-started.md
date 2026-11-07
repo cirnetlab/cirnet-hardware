@@ -1,8 +1,8 @@
 # Bắt đầu với CIRNET Hardware
 
-[English](../en/getting-started.md) · Tiếng Việt
+[English](../../en/guides/getting-started.md) · Tiếng Việt
 
-[Mục lục tài liệu](index.md)
+[Mục lục tài liệu](../index.md)
 
 ## Chạy dịch vụ Python đã chọn
 
@@ -26,7 +26,7 @@ thích thử lại với tên này sau khi nhận `UNIMPLEMENTED`.
 
 Thiết lập `CIRNET_*` được ưu tiên hơn bí danh `NETCIRCUIT_*`. Cấu hình đã
 chọn dùng backend mô phỏng `legacy`. Đặt `CIRNET_SIMULATION_WORKERS` giống
-nhau ở Remote và Hardware (mặc định `4`). Xem [ranh giới trạm và an toàn](station-boundaries.md)
+nhau ở Remote và Hardware (mặc định `4`). Xem [ranh giới trạm và an toàn](../architecture/station-boundaries.md)
 trước khi dùng trạm vật lý.
 
 ## Chạy ứng viên Hardware Rust
@@ -48,6 +48,6 @@ cirnet-hardware --listen 127.0.0.1:50051
 
 Binary Rust phục vụ cả hai tên RPC 2.0, công bố khả năng thực thi số ảo và báo
 trạm vật lý chưa khả dụng. Với Remote Python, đặt `CIRNET_HARDWARE_PREVIEW=true`
-để dùng RPC xem trước nội bộ trong cấu hình ứng viên. Xem [cách dựng và kiểm thử Rust](verification.md#ứng-viên-hardware-rust)
-và [bằng chứng Gate 3 trên Windows](native-candidate-verification.md) cho tổ hợp
+để dùng RPC xem trước nội bộ trong cấu hình ứng viên. Xem [cách dựng và kiểm thử Rust](../contributing/verification.md#ứng-viên-hardware-rust)
+và [bằng chứng Gate 3 trên Windows](../history/stage-3-windows-verification.md) cho tổ hợp
 r8-R2 đã đo. Cấu hình phát hành đã công bố dùng dịch vụ Python đã chọn.

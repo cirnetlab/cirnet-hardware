@@ -1,8 +1,8 @@
 # Ranh giới trạm và an toàn
 
-[English](../en/station-boundaries.md) · Tiếng Việt
+[English](../../en/architecture/station-boundaries.md) · Tiếng Việt
 
-[Mục lục tài liệu](index.md)
+[Mục lục tài liệu](../index.md)
 
 Hardware phụ trách RPC cục bộ 2.0, vòng đời trạm và giao tiếp FPGA nội bộ. Remote phụ trách tiếp nhận yêu cầu, phân quyền API, lưu giữ quyền sử dụng trạm và trạng thái cách ly, lưu bản ghi đo và xác nhận giải phóng an toàn. Xem [kiến trúc Lab-First](https://github.com/cirnetlab/cirnet-remote/blob/13a35145b6d15644c7be10d95a5410bf69e11867/docs/ARCHITECTURE.md) và [quy định an toàn vật lý](https://github.com/cirnetlab/cirnet-remote/blob/13a35145b6d15644c7be10d95a5410bf69e11867/docs/PHYSICAL_LAB_SAFETY.md) tại bản sửa đổi đã ghim.
 
@@ -15,13 +15,12 @@ Start trên trạm vật lý đòi hỏi kết quả quét và an toàn còn hi�
 
 Dữ liệu NCAP số đi trong `OperationReply.capture_payload`. `result_json` đi kèm chứa siêu dữ liệu. Kiểm thử phần mềm, trình điều khiển thử nghiệm và mô phỏng RTL không chứng nhận bảo vệ điện, ABI phần cứng, thu nhận tín hiệu thật hoặc thời gian đáp ứng.
 
-Chọn backend thử nghiệm bằng `CIRNET_SIMULATION_BACKEND=cpp` và đặt đường dẫn
-cùng mã băm worker Simulator đã kiểm tra trong `CIRNET_SIM_CPP_WORKER` và
-`CIRNET_SIM_CPP_WORKER_SHA256`. Đặt cùng `CIRNET_SIMULATION_WORKERS` ở Remote
-và Hardware. Start native từ chối công việc vượt hạn mức ngay để dành luồng
+Start native từ chối công việc vượt hạn mức ngay để dành luồng
 RPC cho Stop và reset. Cả hai vô hiệu hóa kết quả đang chờ thuộc lượt chạy cũ.
 Nếu tác vụ native còn chạy, Hardware chỉ xác nhận an toàn sau khi xác minh
 việc hủy và dọn dẹp. Nếu chưa thể xác minh, Hardware từ chối xác nhận và giữ
 ràng buộc chủ phiên để Remote có thể cách ly lease.
+Dịch vụ Hardware Python cũng nhận backend `cpp` với các giá trị ghim worker
+trong [cấu hình ứng viên](../guides/getting-started.md#chạy-ứng-viên-hardware-rust).
 
 Khi khôi phục phiên bản, dừng tiếp nhận yêu cầu và chờ xác nhận dọn dẹp an toàn hoặc cách ly trước khi khôi phục bộ artifact Hardware, Contracts và Simulator tương thích cùng các phiên bản được ghim ở bên tiêu thụ. Giữ cơ sở dữ liệu, bản ghi đo, quyền sử dụng trạm và trạng thái cách ly. Không phát lại Start trong quá trình khôi phục.

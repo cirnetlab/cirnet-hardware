@@ -1,8 +1,8 @@
 # Getting started with CIRNET Hardware
 
-English · [Tiếng Việt](../vi/getting-started.md)
+English · [Tiếng Việt](../../vi/guides/getting-started.md)
 
-[Documentation index](index.md)
+[Documentation index](../index.md)
 
 ## Run the selected Python service
 
@@ -27,7 +27,7 @@ name after `UNIMPLEMENTED`.
 `CIRNET_*` settings take precedence over `NETCIRCUIT_*` aliases. The selected
 profile uses the `legacy` simulation backend. Set `CIRNET_SIMULATION_WORKERS`
 to the same value in Remote and Hardware (default `4`). Review the
-[station and safety boundaries](station-boundaries.md) before using a physical
+[station and safety boundaries](../architecture/station-boundaries.md) before using a physical
 station.
 
 ## Run the Rust Hardware candidate
@@ -50,7 +50,7 @@ cirnet-hardware --listen 127.0.0.1:50051
 The Rust binary serves both RPC 2.0 names, advertises virtual digital execution
 and reports physical stations unavailable. For Python Remote, set
 `CIRNET_HARDWARE_PREVIEW=true` to use the internal preview RPC in this
-candidate configuration. See [Rust build and test instructions](verification.md#rust-hardware-candidate)
-and the [Windows Gate 3 evidence](native-candidate-verification.md) for the
+candidate configuration. See [Rust build and test instructions](../contributing/verification.md#rust-hardware-candidate)
+and the [Windows Gate 3 evidence](../history/stage-3-windows-verification.md) for the
 measured r8-R2 combination. Use the selected Python service for the published
 release profile.

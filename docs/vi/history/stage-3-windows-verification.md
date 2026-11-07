@@ -1,8 +1,8 @@
 # Kiểm chứng ứng viên Hardware Rust
 
-[English](../en/native-candidate-verification.md) · Tiếng Việt
+[English](../../en/history/stage-3-windows-verification.md) · Tiếng Việt
 
-[Mục lục tài liệu](index.md) · [Dựng và kiểm thử ứng viên](verification.md#ứng-viên-hardware-rust)
+[Mục lục tài liệu](../index.md) · [Dựng và kiểm thử ứng viên](../contributing/verification.md#ứng-viên-hardware-rust)
 
 **Gate 3 về chức năng, tương thích và an toàn trên Windows x64 đạt với
 r8-R2.** Cả sáu ngưỡng Stop của Windows đều đạt. Phép chẩn đoán hiệu năng

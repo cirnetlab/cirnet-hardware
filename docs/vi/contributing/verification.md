@@ -1,10 +1,10 @@
 # Kiểm chứng CIRNET Hardware
 
-[English](../en/verification.md) · Tiếng Việt
+[English](../../en/contributing/verification.md) · Tiếng Việt
 
-[Mục lục tài liệu](index.md)
+[Mục lục tài liệu](../index.md)
 
-[Quy trình CI](../../.github/workflows/hardware-service.yml) của kho chạy
+[Quy trình CI](../../../.github/workflows/hardware-service.yml) của kho chạy
 trên Ubuntu khi push lên `master`, mở pull request hoặc chạy thủ công. CI dùng
 công cụ DEV cùng các wheel Contracts và Simulator đã ghim, dựng wheel và
 sdist Python, xác minh wheel đã cài, chạy `tests/` từ thư mục ngoài kho và
@@ -78,7 +78,7 @@ Windows đã đo dùng Rust 1.90.0. Chuẩn bị bộ nhớ đệm ngoài bản 
 khi chạy ngoại tuyến. Bản dựng native dùng `cirnet-contracts-native==0.1.2`
 tại commit `e640f80b1199779659d3db7817fee16d13cc24c1`. Đặt
 `CIRNET_CONTRACTS_ROOT`, `CIRNET_SIM_CPP_WORKER` và
-`CIRNET_SIM_CPP_WORKER_SHA256` theo [cấu hình ứng viên](getting-started.md#chạy-ứng-viên-hardware-rust).
+`CIRNET_SIM_CPP_WORKER_SHA256` theo [cấu hình ứng viên](../guides/getting-started.md#chạy-ứng-viên-hardware-rust).
 Chạy từ kho Hardware khi phiên do bộ cấp phát tạo đang hoạt động.
 
 ~~~powershell
@@ -90,7 +90,7 @@ cargo test --locked --offline --test simulator_parity -- --ignored
 
 Bộ kiểm thử đơn vị kiểm tra giao thức truyền, giám sát worker, cách ly kết quả
 cũ của trạm, đồng bộ Start và bind loopback. Bốn
-[ca kiểm tra tương đương](../../native/tests/simulator_parity.rs) bật riêng
+[ca kiểm tra tương đương](../../../native/tests/simulator_parity.rs) bật riêng
 cần worker đã ghim và tài nguyên Contracts thực. Chúng kiểm tra mẫu số và
 NCAP chính xác, preview DC có cấp nguồn và linh kiện chưa hỗ trợ, thứ tự
 clock và vector cùng giới hạn sự kiện, và cách gắn linh kiện vật lý từ
@@ -114,14 +114,14 @@ try {
 } finally { Pop-Location }
 ~~~
 
-[Bộ kiểm thử RPC](../../native/tests/test_rpc_lifecycle.py) bao quát cả hai
+[Bộ kiểm thử RPC](../../../native/tests/test_rpc_lifecycle.py) bao quát cả hai
 tên RPC, NCAP tương đương, trạm vật lý chưa khả dụng, hủy tác vụ và cách ly
 lease, lỗi worker và phản hồi cũ. Các ca QPC chạy trên Windows.
-[Bộ chẩn đoán đối sánh](../../native/tests/test_rpc_stop_diagnostic.py) dùng
+[Bộ chẩn đoán đối sánh](../../../native/tests/test_rpc_stop_diagnostic.py) dùng
 cùng các artifact đầu vào và bật riêng qua
 `CIRNET_NATIVE_STAGE3_STOP_DIAGNOSTIC=1` hoặc
 `CIRNET_NATIVE_STAGE3_RPC_DIAGNOSTIC=1`. Remote phụ trách quy trình Stop
-chính thức dưới tải. [Bằng chứng Gate 3 trên Windows](native-candidate-verification.md) ·
+chính thức dưới tải. [Bằng chứng Gate 3 trên Windows](../history/stage-3-windows-verification.md) ·
 [Chính sách Gate 3 của Remote](https://github.com/cirnetlab/cirnet-remote/blob/13a35145b6d15644c7be10d95a5410bf69e11867/docs/vi/architecture/native-migration.md#chính-sách-nghiệm-thu-gate-3-theo-môi-trường)
 
 ## Kiểm tra và dọn phiên
@@ -132,4 +132,4 @@ Ghi kết quả và phạm vi vào Markdown. Kiểm tra bằng chứng thô và 
 node scripts/artifact-paths.mjs --cleanup $env:CIRNET_ARTIFACTS_SESSION
 ~~~
 
-Xem [quy trình CI](../../.github/workflows/hardware-service.yml) và [hồ sơ kiểm chứng theo ngày](../VERIFICATION.md). Các bước này xác nhận hành vi phần mềm đã cài trong phạm vi được ghi nhận.
+Xem [quy trình CI](../../../.github/workflows/hardware-service.yml) và [hồ sơ kiểm chứng theo ngày](../../en/history/verification-ledger.md). Các bước này xác nhận hành vi phần mềm đã cài trong phạm vi được ghi nhận.

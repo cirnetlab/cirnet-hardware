@@ -1,10 +1,10 @@
 # Verify CIRNET Hardware
 
-English · [Tiếng Việt](../vi/verification.md)
+English · [Tiếng Việt](../../vi/contributing/verification.md)
 
-[Documentation index](index.md)
+[Documentation index](../index.md)
 
-The producer [CI workflow](../../.github/workflows/hardware-service.yml) runs
+The producer [CI workflow](../../../.github/workflows/hardware-service.yml) runs
 on Ubuntu for pushes to `master`, pull requests, and manual dispatch. It uses
 the pinned DEV tool, Contracts and Simulator wheels, builds a Python wheel
 and sdist, verifies the installed wheel, runs `tests/` from an external
@@ -77,7 +77,7 @@ Windows build used Rust 1.90.0. Prepare the cache outside the checkout before
 running offline. The native build consumes `cirnet-contracts-native==0.1.2`
 from revision `e640f80b1199779659d3db7817fee16d13cc24c1`. Set
 `CIRNET_CONTRACTS_ROOT`, `CIRNET_SIM_CPP_WORKER`, and
-`CIRNET_SIM_CPP_WORKER_SHA256` as in the [candidate setup](getting-started.md#run-the-rust-hardware-candidate).
+`CIRNET_SIM_CPP_WORKER_SHA256` as in the [candidate setup](../guides/getting-started.md#run-the-rust-hardware-candidate).
 Run from the Hardware repository with an active allocator session.
 
 ~~~powershell
@@ -89,7 +89,7 @@ cargo test --locked --offline --test simulator_parity -- --ignored
 
 The unit tests cover the wire protocol, worker supervision, station fencing,
 Start rendezvous, and loopback binding. The four opt-in
-[parity cases](../../native/tests/simulator_parity.rs) need the real pinned
+[parity cases](../../../native/tests/simulator_parity.rs) need the real pinned
 worker and Contracts resources. They check digital samples and exact NCAP,
 powered DC preview and unsupported parts, clock and vector ordering and the
 event budget, and physical mounting from
@@ -113,14 +113,14 @@ try {
 } finally { Pop-Location }
 ~~~
 
-The [RPC suite](../../native/tests/test_rpc_lifecycle.py) covers both RPC names,
+The [RPC suite](../../../native/tests/test_rpc_lifecycle.py) covers both RPC names,
 NCAP parity, unavailable physical stations, cancellation and quarantine,
 worker faults and stale replies. Its QPC cases run on Windows.
-The [paired diagnostic suite](../../native/tests/test_rpc_stop_diagnostic.py)
+The [paired diagnostic suite](../../../native/tests/test_rpc_stop_diagnostic.py)
 uses the same artifact inputs and is opt-in through
 `CIRNET_NATIVE_STAGE3_STOP_DIAGNOSTIC=1` or
 `CIRNET_NATIVE_STAGE3_RPC_DIAGNOSTIC=1`. The formal loaded Stop procedure
-belongs to Remote. [Windows Gate 3 evidence](native-candidate-verification.md) ·
+belongs to Remote. [Windows Gate 3 evidence](../history/stage-3-windows-verification.md) ·
 [Remote Gate 3 policy](https://github.com/cirnetlab/cirnet-remote/blob/13a35145b6d15644c7be10d95a5410bf69e11867/docs/en/architecture/native-migration.md#gate-3-acceptance-policy-by-host)
 
 ## Inspect and clean the session
@@ -131,4 +131,4 @@ Record the result and scope in Markdown. Inspect raw evidence and confirm owned 
 node scripts/artifact-paths.mjs --cleanup $env:CIRNET_ARTIFACTS_SESSION
 ~~~
 
-See the [workflow](../../.github/workflows/hardware-service.yml) and the [dated verification record](../VERIFICATION.md). These checks establish installed software behavior within their recorded scope.
+See the [workflow](../../../.github/workflows/hardware-service.yml) and the [dated verification record](../history/verification-ledger.md). These checks establish installed software behavior within their recorded scope.

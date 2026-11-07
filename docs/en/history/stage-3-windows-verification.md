@@ -1,8 +1,8 @@
 # Rust Hardware candidate verification
 
-English · [Tiếng Việt](../vi/native-candidate-verification.md)
+English · [Tiếng Việt](../../vi/history/stage-3-windows-verification.md)
 
-[Documentation index](index.md) · [Build and test the candidate](verification.md#rust-hardware-candidate)
+[Documentation index](../index.md) · [Build and test the candidate](../contributing/verification.md#rust-hardware-candidate)
 
 **Gate 3 Windows x64 functionality, compatibility, and safety passed on
 r8-R2.** The six Windows Stop ceilings passed. The separate paired performance
