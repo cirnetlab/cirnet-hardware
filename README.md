@@ -9,3 +9,4 @@ The selected CIRNET 0.1.4 system profile uses the Python `cirnet-hardware-servic
 - [Start the service](docs/en/guides/getting-started.md)
 - [Station and safety boundaries](docs/en/architecture/station-boundaries.md)
 - [Build and verify](docs/en/contributing/verification.md)
+- [Release changelog](docs/changelogs/README.md)

@@ -12,8 +12,9 @@
 
 - [Kiểm chứng](contributing/verification.md) hướng dẫn kiểm thử artifact Python đã cài, bộ kiểm thử Rust và quản lý bằng chứng ngoài kho.
 - [Bằng chứng ứng viên Rust](history/stage-3-windows-verification.md) ghi nhận kết quả Gate 3 trên Windows và các lượt chẩn đoán trước đó.
+- [Viết tài liệu](contributing/writing-documentation.md) nêu quy ước cho cặp ngôn ngữ, hồ sơ công việc AI và bằng chứng kiểm chứng.
 
 ## Lịch sử
 
-- [Hồ sơ kiểm chứng](../en/history/verification-ledger.md), [báo cáo tách kho M4](../en/history/2026-10-27-m4-verification.md) và [hồ sơ phát hành M6](../en/history/m6-release-work.md) lưu bằng chứng theo ngày bằng tiếng Anh.
-- [README trước đây](https://github.com/cirnetlab/cirnet-hardware/blob/3ad140f24ae5f3f2e6b735b5cff4beec7bffda54/README.md) lưu các ghi chú gốc bằng tiếng Anh về gói, cách dựng và khôi phục.
+- [Nhật ký phát hành](../changelogs/README.md) ghi các phiên bản đã phát hành và thay đổi đang chờ phát hành.
+- [Mục lục lịch sử](history/index.md) liệt kê bằng chứng theo ngày, nguồn gốc và ngôn ngữ của từng hồ sơ.

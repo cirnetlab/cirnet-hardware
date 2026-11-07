@@ -12,8 +12,9 @@ English · [Tiếng Việt](../vi/index.md)
 
 - [Verification](contributing/verification.md) covers installed Python artifacts, Rust tests, and external evidence.
 - [Rust candidate evidence](history/stage-3-windows-verification.md) records the Windows Gate 3 verdict and earlier diagnostics.
+- [Writing documentation](contributing/writing-documentation.md) covers the language pair, AI task records, and verification evidence.
 
 ## History
 
-- [Verification record](history/verification-ledger.md), [M4 extraction report](history/2026-10-27-m4-verification.md), and [M6 release work](history/m6-release-work.md) preserve dated evidence.
-- [Previous README](https://github.com/cirnetlab/cirnet-hardware/blob/3ad140f24ae5f3f2e6b735b5cff4beec7bffda54/README.md) preserves the original package, build, and rollback notes.
+- [Release changelog](../changelogs/README.md) records published versions and pending changes.
+- [History index](history/index.md) lists dated evidence, original sources, and the language of each record.
