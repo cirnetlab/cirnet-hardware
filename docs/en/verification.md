@@ -1,8 +1,17 @@
-# Verify the Hardware wheel
+# Verify CIRNET Hardware
 
 English · [Tiếng Việt](../vi/verification.md)
 
 [Documentation index](index.md)
+
+The producer [CI workflow](../../.github/workflows/hardware-service.yml) runs
+on Ubuntu for pushes to `master`, pull requests, and manual dispatch. It uses
+the pinned DEV tool, Contracts and Simulator wheels, builds a Python wheel
+and sdist, verifies the installed wheel, runs `tests/` from an external
+directory, and uploads the archives for review. The native Rust build, the
+opt-in Stage 1 lifecycle tests, and the Stage 3 suites run separately.
+
+## Verify the installed Python wheel
 
 Use Node 26 and Python 3.14 to reproduce the current CI environment. Activate a fresh Python environment outside all checkouts. Select reviewed Contracts and Simulator 0.1.2 manifests and the pinned DEV allocator. Before saving diagnostics, bootstrap the allocator and inherit the session and context. For a shared check, the context lists every participating repository and an explicit owner.
 
@@ -60,6 +69,61 @@ process or reply timing to cover saturated Stop, reset, crash, timeout and a
 reply held during Stop. For each case it checks worker exit, empty stale
 capture, recovery with identical NCAP bytes and shutdown of the replacement
 worker. These controlled fault timings are separate from performance samples.
+
+## Rust Hardware candidate
+
+Use Rust 1.90 or later and the locked Cargo dependency cache. The measured
+Windows build used Rust 1.90.0. Prepare the cache outside the checkout before
+running offline. The native build consumes `cirnet-contracts-native==0.1.2`
+from revision `e640f80b1199779659d3db7817fee16d13cc24c1`. Set
+`CIRNET_CONTRACTS_ROOT`, `CIRNET_SIM_CPP_WORKER`, and
+`CIRNET_SIM_CPP_WORKER_SHA256` as in the [candidate setup](getting-started.md#run-the-rust-hardware-candidate).
+Run from the Hardware repository with an active allocator session.
+
+~~~powershell
+$env:CARGO_TARGET_DIR = Join-Path $env:CIRNET_ARTIFACTS_SESSION 'hardware-cargo'
+cargo build --release --locked --offline
+cargo test --locked --offline --lib --bins
+cargo test --locked --offline --test simulator_parity -- --ignored
+~~~
+
+The unit tests cover the wire protocol, worker supervision, station fencing,
+Start rendezvous, and loopback binding. The four opt-in
+[parity cases](../../native/tests/simulator_parity.rs) need the real pinned
+worker and Contracts resources. They check digital samples and exact NCAP,
+powered DC preview and unsupported parts, clock and vector ordering and the
+event budget, and physical mounting from
+`contracts/design-models/fixtures/physical-mounting-parity.json`.
+
+For the separate loopback RPC suite, use a verification environment with
+pytest, psutil, and the pinned Python Contracts, Hardware, Simulator, and
+Remote wheels. Use the Stage 1 reference wheels and
+`CIRNET_NATIVE_STAGE1_CANDIDATE` as above. Set
+`CIRNET_NATIVE_STAGE3_HARDWARE` to the absolute Rust executable path and
+`CIRNET_NATIVE_STAGE3_HARDWARE_SHA256` to the selected digest. If the installed
+Remote wheel differs from Stage 1, set `CIRNET_NATIVE_STAGE3_REMOTE_SHA256` to
+the selected Remote digest. Keep `rustc` on PATH for the stale reply fixture
+that the suite builds under its external test directory.
+
+~~~powershell
+$rpcTests = Join-Path (Get-Location).Path 'native/tests/test_rpc_lifecycle.py'
+Push-Location $env:CIRNET_ARTIFACTS_SESSION
+try {
+    python -I -B -m pytest -q $rpcTests --basetemp (Join-Path $env:CIRNET_ARTIFACTS_SESSION 'hardware-native-rpc')
+} finally { Pop-Location }
+~~~
+
+The [RPC suite](../../native/tests/test_rpc_lifecycle.py) covers both RPC names,
+NCAP parity, unavailable physical stations, cancellation and quarantine,
+worker faults and stale replies. Its QPC cases run on Windows.
+The [paired diagnostic suite](../../native/tests/test_rpc_stop_diagnostic.py)
+uses the same artifact inputs and is opt-in through
+`CIRNET_NATIVE_STAGE3_STOP_DIAGNOSTIC=1` or
+`CIRNET_NATIVE_STAGE3_RPC_DIAGNOSTIC=1`. The formal loaded Stop procedure
+belongs to Remote. [Windows Gate 3 evidence](native-candidate-verification.md) ·
+[Remote Gate 3 policy](https://github.com/cirnetlab/cirnet-remote/blob/13a35145b6d15644c7be10d95a5410bf69e11867/docs/en/architecture/native-migration.md#gate-3-acceptance-policy-by-host)
+
+## Inspect and clean the session
 
 Record the result and scope in Markdown. Inspect raw evidence and confirm owned workers have stopped before cleaning only the session you own. Preserve release candidates selected for handoff separately.
 

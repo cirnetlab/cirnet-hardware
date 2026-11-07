@@ -4,7 +4,7 @@ English · [Tiếng Việt](../vi/station-boundaries.md)
 
 [Documentation index](index.md)
 
-Hardware owns local RPC 2.0, station lifecycles and private FPGA transport. Remote owns admission, API authorization, durable leases and quarantine, capture storage and acknowledgement of safe release. Consult the pinned [Lab-First architecture](https://github.com/cirnetlab/cirnet-remote/blob/0d038c7aed15798696223558b4e58f5ffe926aa9/docs/ARCHITECTURE.md) and [physical safety authority](https://github.com/cirnetlab/cirnet-remote/blob/0d038c7aed15798696223558b4e58f5ffe926aa9/docs/PHYSICAL_LAB_SAFETY.md).
+Hardware owns local RPC 2.0, station lifecycles and private FPGA transport. Remote owns admission, API authorization, durable leases and quarantine, capture storage and acknowledgement of safe release. Consult the pinned [Lab-First architecture](https://github.com/cirnetlab/cirnet-remote/blob/13a35145b6d15644c7be10d95a5410bf69e11867/docs/ARCHITECTURE.md) and [physical safety authority](https://github.com/cirnetlab/cirnet-remote/blob/13a35145b6d15644c7be10d95a5410bf69e11867/docs/PHYSICAL_LAB_SAFETY.md).
 
 | Station | Current behavior |
 | --- | --- |

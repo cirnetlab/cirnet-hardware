@@ -4,164 +4,50 @@
 
 [Mục lục tài liệu](index.md)
 
-Mã nguồn hiện tại dựng `cirnet-hardware-service==0.1.2` cho Python từ 3.11. Trong một môi trường mới, cài wheel Hardware cùng các wheel đã được rà soát `cirnet-contracts==0.1.2` và `cirnet-simulator==0.1.2`. Dùng đúng mã băm artifact trong danh mục phát hành hệ thống. Contracts cung cấp các binding RPC đã sinh. Có thể cài Hardware độc lập với mã nguồn API và các kho lân cận.
+## Chạy dịch vụ Python đã chọn
 
-Khởi động dịch vụ từ môi trường đã cài các wheel.
+Trong môi trường Python mới từ 3.11 trở lên, cài các wheel đã chọn
+`cirnet-hardware-service==0.1.2`, `cirnet-contracts==0.1.2` và
+`cirnet-simulator==0.1.2`. Dùng đúng phiên bản mã nguồn và mã SHA-256
+trong [manifest phát hành CIRNET 0.1.4](https://github.com/cirnetlab/cirnet-remote/blob/38aea6120920f48cea817827ac2277cce4bef25e/integration/release-set.json). Contracts cung cấp các
+binding RPC đã sinh. Hardware chạy độc lập với mã nguồn API và các kho lân cận.
+
+Mã nguồn hiện tại cũng dựng phiên bản `0.1.2`. Kiểm chứng bản dựng mới riêng với wheel đã chọn.
 
 ~~~sh
 python -m hardware_service.server
 ~~~
 
-Địa chỉ mặc định là `127.0.0.1:50051`. Dịch vụ chỉ lắng nghe trên loopback hoặc Unix socket. Trình duyệt thực hiện thao tác phòng thí nghiệm qua Remote API. Tên dịch vụ chuẩn là `cirnet.hardware.v2.HardwareService`. Binding đã sinh cũng phục vụ `netcircuit.hardware.v2.HardwareService`, và máy khách chỉ thử tuyến này sau khi nhận `UNIMPLEMENTED`.
+Địa chỉ mặc định là `127.0.0.1:50051`. Dịch vụ nhận kết nối qua loopback hoặc
+Unix socket. Trình duyệt thực hiện thao tác phòng thí nghiệm qua Remote API.
+Tên dịch vụ RPC chuẩn là `cirnet.hardware.v2.HardwareService`. Các binding
+cũng phục vụ tên `netcircuit.hardware.v2.HardwareService`. Máy khách tương
+thích thử lại với tên này sau khi nhận `UNIMPLEMENTED`.
 
-Thiết lập `CIRNET_*` được ưu tiên hơn bí danh `NETCIRCUIT_*`. Với phòng thí nghiệm ảo, đặt `CIRNET_SIMULATION_WORKERS` giống nhau ở API và Hardware. Giá trị mặc định là `4`. Trạm vật lý chỉ khả dụng khi có trình điều khiển và phần cứng đã được kiểm chứng. Xem [ranh giới trạm và an toàn](station-boundaries.md) trước khi diễn giải kết quả RPC là trạng thái sẵn sàng của phần cứng.
+Thiết lập `CIRNET_*` được ưu tiên hơn bí danh `NETCIRCUIT_*`. Cấu hình đã
+chọn dùng backend mô phỏng `legacy`. Đặt `CIRNET_SIMULATION_WORKERS` giống
+nhau ở Remote và Hardware (mặc định `4`). Xem [ranh giới trạm và an toàn](station-boundaries.md)
+trước khi dùng trạm vật lý.
 
-Artifact `v0.1.1` đã công bố giữ nguyên phiên bản và mã SHA256 ban đầu. Tái lập các artifact đó trong môi trường riêng. Để dựng bản mới, làm theo [hướng dẫn kiểm chứng](verification.md).
+## Chạy ứng viên Hardware Rust
 
-## Ứng viên Hardware Rust
+Dùng binary `cirnet-hardware` đã xác minh và worker C++ giai đoạn 1 tương ứng
+từ bộ artifact ứng viên đã chọn. Đặt các giá trị sau trước khi khởi chạy.
 
-Binary `cirnet-hardware` dùng crate Contracts Rust đã ghim và worker C++ của
-giai đoạn 1. Đặt `CIRNET_CONTRACTS_ROOT` thành đường dẫn tuyệt đối của thư mục
-tài nguyên Contracts đã xác minh. Đặt `CIRNET_SIM_CPP_WORKER` thành đường dẫn
-tuyệt đối của worker và `CIRNET_SIM_CPP_WORKER_SHA256` thành SHA-256 đã chọn.
-Đặt `CIRNET_SIMULATION_WORKERS` giống Remote và chọn `cpp` cho Simulator.
+| Thiết lập | Giá trị |
+| --- | --- |
+| `CIRNET_CONTRACTS_ROOT` | Đường dẫn tuyệt đối của thư mục tài nguyên chứa cây `contracts/` đã xác minh. |
+| `CIRNET_SIM_CPP_WORKER` | Đường dẫn tuyệt đối của worker C++ đã chọn. |
+| `CIRNET_SIM_CPP_WORKER_SHA256` | Mã SHA-256 của worker đã chọn. |
+| `CIRNET_SIMULATION_BACKEND` | `cpp`. |
+| `CIRNET_SIMULATION_WORKERS` | Cùng số lượng ở Remote và Hardware, từ 1 đến 64 với Hardware Rust. Mặc định là `4`. |
 
 ~~~sh
 cirnet-hardware --listen 127.0.0.1:50051
 ~~~
 
-Dịch vụ cung cấp cả hai tên Hardware RPC 2.0, công bố thực thi số ảo và báo
-trạm vật lý chưa khả dụng. Remote Python có thể bật RPC preview nội bộ qua
-`CIRNET_HARDWARE_PREVIEW=true`. Chỉ bật tổ hợp này trong lane kiểm chứng giai
-đoạn 3 cho tới khi gate đạt.
-
-### Bằng chứng thời gian Stop tùy chọn trên Windows
-
-Trong lane kiểm chứng giai đoạn 3, lệnh `StopExecution` có thể yêu cầu thời
-điểm vào handler Hardware bằng cách gửi metadata gRPC
-`x-cirnet-stop-ingress` với giá trị `qpc-ns-v1`. Với ID thí nghiệm gồm 32 ký
-tự thập lục phân viết thường, dịch vụ trả metadata ban đầu cùng khóa với giá
-trị `qpc-ns-v1:<experiment_id>:<nanoseconds>`. Dịch vụ lấy dấu thời gian
-từ QueryPerformanceCounter của Windows khi vào handler và gắn dấu sau khi
-xử lý Stop. [Windows QPC](https://learn.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps)
-
-Harness đối chiếu dấu với ID thí nghiệm và kiểm tra thứ tự so với mốc cả bốn
-worker còn sống, worker mục tiêu thoát, ACK an toàn và lease được giải phóng
-bền vững. Các khoảng thời gian quan trọng phải lớn hơn một tick QPC. Kiểm
-chứng trên Windows x64 đạt 12 ca vòng đời và giao thức Hardware, gồm kiểm tra
-metadata trên cả hai tên RPC, và 15 ca kiểm tra tập trung của harness.
-
-Lượt chẩn đoán r4 không tạm dừng worker đạt 3 trong 35 lượt thử với Hardware
-Python B và 8 trong 8 lượt với Hardware Rust. Lane Python thiếu mẫu so với
-mục tiêu tám lượt hợp lệ. Lượt đo lại Stop chính thức cho ứng viên này có
-trạng thái `NOT RUN`. Gate yêu cầu ba cửa sổ với 100 lượt hợp lệ mỗi bên và
-các ngưỡng p95/p99 hiện tại.
-
-### Chẩn đoán đồng bộ Start tùy chọn trên Windows
-
-Trong lane kiểm chứng riêng của giai đoạn 3, đặt
-`CIRNET_HARDWARE_START_RENDEZVOUS=1` để bật cơ chế chờ nhóm tại điểm vào
-handler `StartExecution`. Hai tên RPC dùng chung nhóm theo từng đợt.
-Ticket hợp lệ trong metadata `x-cirnet-start-wave` chỉ định một đợt và
-đúng bốn ID thí nghiệm ảo khác nhau. Mỗi handler chờ trước khi thao tác
-với station. Yêu cầu trùng, thành viên xung đột, việc hủy được phát hiện
-trước khi mở nhóm hoặc thiếu thành viên khi hết hạn hai giây sẽ hủy cả
-nhóm. Ticket đã đóng giữ nguyên trạng thái trong suốt vòng đời của dịch
-vụ kiểm chứng. Lệnh không mang ticket đi theo luồng Start thông thường.
-
-Wrapper kiểm thử của Python B đã ghim và Hardware Rust đều trả bốn dấu
-thời gian vào handler và một mốc mở nhóm chung bằng QPC Windows trong
-metadata phản hồi gRPC. Hai bên dùng cùng cơ chế đồng bộ khi Remote gửi
-yêu cầu. Các worker C++ chạy liên tục với workload đã ghim. Harness Stop
-vẫn kiểm tra cả bốn worker đã đọc đủ request và chưa ghi phản hồi cho đến
-khi worker mục tiêu thoát, cùng với mốc vào handler Stop khớp thí nghiệm,
-ACK an toàn, giải phóng lease bền vững và kiểm tra capture.
-
-Binary Rust Windows x64 có SHA-256
-`22d3d0a1c57aad0d2d01d512f3a890149566bc799228559b6943843cba1e85e6`
-đạt 15 ca RPC Hardware tập trung. Wrapper Python B và harness đạt 22 ca.
-Với các wheel Remote r4, lượt chẩn đoán đạt 8 trong 10 lần thử trên Python
-B (80,0%) và 8 trong 8 lần trên Rust. Lượt chẩn đoán trước khi đồng bộ
-tại handler đạt 3 trong 35 lần trên Python B (8,6%) và 8 trong 8 lần trên
-Rust. Hai lượt đo cặp mất lần lượt 199,80 và 180,96 giây, với số lượt hợp
-lệ và lượt làm nóng khác nhau.
-
-Cả sáu so sánh p95/p99 trong lượt chẩn đoán đều đạt ngưỡng hiện có với
-tám lượt hợp lệ mỗi bên. Biên bản
-`native-hardware-stop/c27bcece564342159e0726c69ff8d16d/stop-summary.json`
-có SHA-256
-`001033e2476c81f65aae46fdb754f38203d8e91a717c8e299a514499b6aac712`.
-Lượt chẩn đoán tám mẫu này diễn ra trước lượt nghiệm thu r8–R2 bên dưới.
-
-Chọn biến thể nghiệm thu đã được phê duyệt trong harness Remote bằng
-`CIRNET_NATIVE_STAGE3_STOP_METHOD=natural-loaded-stop-hardware-rendezvous-v1`.
-Phương pháp không đồng bộ tại handler là mặc định. Mỗi cửa sổ nghiệm thu
-cho phép tối đa 403 lần thử để thu đủ 100 lượt hợp lệ mỗi bên. Binary cuối
-đạt toàn bộ 25 ca RPC và vòng đời Hardware với bản đối chứng đã ghim. Ba
-ca Remote r7 cũng đạt, gồm giải phóng lease bền vững khi hết hạn hoặc mất
-kết nối và cách ly khi chưa nhận được ACK an toàn.
-
-### Nghiệm thu chức năng và an toàn trên Windows
-
-Phạm vi nghiệm thu trên Windows i5 là `windows-functional-safety-v1`.
-Chọn bằng `CIRNET_NATIVE_STAGE3_STOP_ACCEPTANCE_SCOPE` cùng phương pháp
-đồng bộ Start tại Hardware đã duyệt. Phạm vi này giữ ba cửa sổ đo cặp,
-100 mẫu hợp lệ mỗi bên trong mỗi cửa sổ và tối đa 403 lần thử cho mỗi
-cửa sổ. Mỗi mẫu phải chứng minh cả bốn worker đang hoạt động khi vào
-handler Stop, xác nhận đã thu hồi tiến trình mục tiêu trước ACK an toàn,
-đồng thời kiểm tra cách ly kết quả capture và trạng thái lease bền vững.
-
-| Ngưỡng vận hành Stop đã chốt | p95 ms | p99 ms |
-| --- | ---: | ---: |
-| Stop HTTP | 197,554060 | 581,156400 |
-| ACK gRPC ban đầu | 139,204780 | 526,711790 |
-| Giải phóng lease bền vững | 2.534,556860 | 2.598,374680 |
-
-Cả sáu ngưỡng đã chốt đều bắt buộc trên Windows. So sánh cặp với giới
-hạn 110% của Python B được ghi riêng để chẩn đoán hiệu năng, cùng các
-số đo CPU, bộ nhớ và thông lượng trên Windows. Hạn dọn dẹp của Hardware
-và hạn thu hồi tiến trình vẫn bắt buộc. Khi thiếu ACK dọn dẹp hoặc chưa
-xác minh được ACK, Remote giữ cách ly thay vì giải phóng lease. Nghiệm thu
-hiệu năng trên Linux/Xeon có trạng thái `NOT RUN`. Cần chốt ngưỡng trước
-khi nghiệm thu.
-
-#### Kết quả Stop khi có tải của r8–R2
-
-**PASS** trên Windows x64 theo phạm vi `windows-functional-safety-v1` và
-phương pháp `natural-loaded-stop-hardware-rendezvous-v1`. Cả sáu cửa sổ
-đều đủ 100 mẫu Stop hợp lệ trong giới hạn 403 lần thử. Python B cần lần
-lượt 175, 153 và 174 lần thử. Rust C cần 100 lần trong mỗi cửa sổ.
-Pytest chạy trong 2.953,75 giây. Số đo là trung vị của các phân vị từ ba cửa sổ.
-
-| Thời gian Stop tính bằng ms | Python B p95/p99 | Rust C p95/p99 | Ngưỡng đã chốt |
-| --- | ---: | ---: | --- |
-| Stop HTTP | 78,6032 / 100,8966 | 89,1368 / 100,4389 | PASS |
-| ACK gRPC ban đầu | 56,3787 / 69,3376 | 62,2677 / 78,5544 | PASS |
-| Giải phóng lease bền vững | 145,9619 / 168,5140 | 144,0377 / 163,8268 | PASS |
-
-Chẩn đoán hiệu năng cặp vượt giới hạn 110% của Python B ở HTTP p95
-(89,1368 so với 86,46352 ms), ACK gRPC ban đầu p95 (62,2677 so với
-62,01657 ms) và ACK gRPC ban đầu p99 (78,5544 so với 76,27136 ms).
-Ba phép so sánh cặp còn lại đạt. Kết quả Stop trên Windows dựa trên
-sáu ngưỡng đã chốt.
-
-Đối chiếu chỉ đọc xác minh cả 600 mẫu. Mỗi mẫu có bốn thí nghiệm khác nhau
-dùng chung mốc QPC và bốn worker chạy liên tục. Các ảnh chụp bộ đếm xác
-nhận bốn yêu cầu đủ 2.806.507 byte và chưa ghi phản hồi cho đến khi tiến
-trình mục tiêu thoát. Từng tiến trình mục tiêu thoát trước ACK an toàn và
-trước khi lease được giải phóng bền vững, đồng thời không có capture.
-Đối chiếu đã tính lại mã băm của cả 1.800 tệp NCAP từ các worker còn lại,
-xác nhận không còn lease và dịch vụ đã dừng ở cả sáu lane.
-
-Manifest đã chọn có SHA-256
-`ebc49c57c052e0a78c98074af240c78010f787872a4ad32ac23617ada1fc15bd`.
-Binary Hardware Rust có SHA-256
-`22d3d0a1c57aad0d2d01d512f3a890149566bc799228559b6943843cba1e85e6`
-và wheel Remote r8 có SHA-256
-`0e3280dc41d81e1b00b4ee7a5e35a3646b06b32276181000ee874b43e113bd01`.
-Biên bản `native-hardware-stop/97612df8bfb942bfbb131dbaf78c1b10/stop-summary.json`
-có SHA-256
-`41b41bb221ec29118e324637119cf2fdfd5a267760b2b7a1da8d9da3310593b0`.
-
-Hiệu năng Linux/Xeon và HIL vật lý có trạng thái `NOT RUN`. Cấu hình
-đã chọn công bố thực thi ảo và báo thực thi vật lý chưa khả dụng.
+Binary Rust phục vụ cả hai tên RPC 2.0, công bố khả năng thực thi số ảo và báo
+trạm vật lý chưa khả dụng. Với Remote Python, đặt `CIRNET_HARDWARE_PREVIEW=true`
+để dùng RPC xem trước nội bộ trong cấu hình ứng viên. Xem [cách dựng và kiểm thử Rust](verification.md#ứng-viên-hardware-rust)
+và [bằng chứng Gate 3 trên Windows](native-candidate-verification.md) cho tổ hợp
+r8-R2 đã đo. Cấu hình phát hành đã công bố dùng dịch vụ Python đã chọn.

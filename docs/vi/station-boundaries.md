@@ -4,7 +4,7 @@
 
 [Mục lục tài liệu](index.md)
 
-Hardware phụ trách RPC cục bộ 2.0, vòng đời trạm và giao tiếp FPGA nội bộ. Remote phụ trách tiếp nhận yêu cầu, phân quyền API, lưu giữ quyền sử dụng trạm và trạng thái cách ly, lưu bản ghi đo và xác nhận giải phóng an toàn. Xem [kiến trúc Lab-First](https://github.com/cirnetlab/cirnet-remote/blob/0d038c7aed15798696223558b4e58f5ffe926aa9/docs/ARCHITECTURE.md) và [quy định an toàn vật lý](https://github.com/cirnetlab/cirnet-remote/blob/0d038c7aed15798696223558b4e58f5ffe926aa9/docs/PHYSICAL_LAB_SAFETY.md) tại bản sửa đổi đã ghim.
+Hardware phụ trách RPC cục bộ 2.0, vòng đời trạm và giao tiếp FPGA nội bộ. Remote phụ trách tiếp nhận yêu cầu, phân quyền API, lưu giữ quyền sử dụng trạm và trạng thái cách ly, lưu bản ghi đo và xác nhận giải phóng an toàn. Xem [kiến trúc Lab-First](https://github.com/cirnetlab/cirnet-remote/blob/13a35145b6d15644c7be10d95a5410bf69e11867/docs/ARCHITECTURE.md) và [quy định an toàn vật lý](https://github.com/cirnetlab/cirnet-remote/blob/13a35145b6d15644c7be10d95a5410bf69e11867/docs/PHYSICAL_LAB_SAFETY.md) tại bản sửa đổi đã ghim.
 
 | Trạm | Hành vi hiện tại |
 | --- | --- |
