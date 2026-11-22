@@ -1,0 +1,7 @@
+# Rust products and local verification
+/target/
+.superpowers/
+.worktrees/
+__pycache__/
+.pytest_cache/
+.venv/
