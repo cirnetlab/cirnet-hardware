@@ -14,7 +14,7 @@ SHA-256-verified C++ Simulator worker. It exposes virtual stations.
 | Remote | Web API, authentication and authorization, durable leases, quarantine and capture persistence. Remote releases a lease only after accepted safe cleanup. |
 | Simulator, Contracts and FPGA | Simulator owns electrical models and private CNP1/CNP2 framing. Contracts owns canonical RPC and logical schemas. FPGA owns RTL and board qualification. |
 
-Use the [Lab-First Architecture](https://github.com/cirnetlab/cirnet-rules/blob/887578e8c0aa06882cfa19138955fb54019fb428/docs/tai-lieu-kien-tuc-he-thong/cirnet-architecture-lab-first-en.md) for system safety and the [Remote physical safety contract](https://github.com/cirnetlab/cirnet-remote-next/blob/master/docs/en/architecture/physical-lab-safety-contract.md) for the application-to-station requirements.
+Use the [Lab-First Architecture](https://github.com/cirnetlab/cirnet-remote-next/blob/master/docs/cirnet-architecture-lab-first-en.md) for system safety and the [Remote physical safety contract](https://github.com/cirnetlab/cirnet-remote-next/blob/master/docs/en/architecture/physical-lab-safety-contract.md) for the application-to-station requirements.
 
 | Station | Current behavior |
 | --- | --- |

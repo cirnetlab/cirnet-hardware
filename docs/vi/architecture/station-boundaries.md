@@ -14,7 +14,7 @@ Simulator C++ đã xác minh SHA-256. Dịch vụ cung cấp trạm ảo.
 | Remote | API Web, xác thực và phân quyền, lease bền vững, cách ly và lưu trữ bản thu. Remote chỉ giải phóng lease sau khi nhận xác nhận dọn dẹp an toàn hợp lệ. |
 | Simulator, Contracts và FPGA | Simulator sở hữu mô hình điện và khung CNP1/CNP2 nội bộ. Contracts sở hữu RPC và schema logic chuẩn. FPGA sở hữu RTL và việc nghiệm thu bo. |
 
-Dùng [kiến trúc Lab-First](https://github.com/cirnetlab/cirnet-rules/blob/887578e8c0aa06882cfa19138955fb54019fb428/docs/tai-lieu-kien-tuc-he-thong/cirnet-architecture-lab-first-vi.md) cho an toàn hệ thống và [hợp đồng an toàn vật lý của Remote](https://github.com/cirnetlab/cirnet-remote-next/blob/master/docs/vi/architecture/physical-lab-safety-contract.md) cho yêu cầu giữa ứng dụng và trạm.
+Dùng [kiến trúc Lab-First](https://github.com/cirnetlab/cirnet-remote-next/blob/master/docs/cirnet-architecture-lab-first-vi.md) cho an toàn hệ thống và [hợp đồng an toàn vật lý của Remote](https://github.com/cirnetlab/cirnet-remote-next/blob/master/docs/vi/architecture/physical-lab-safety-contract.md) cho yêu cầu giữa ứng dụng và trạm.
 
 | Trạm | Hành vi hiện tại |
 | --- | --- |
