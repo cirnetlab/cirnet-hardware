@@ -6,6 +6,7 @@
 - Build against Contracts Next and verify the Simulator Next worker digest at the runtime boundary.
 - Preserve local Hardware RPC 2.0, station lifecycle and protected Stop behavior.
 - Reference CIRNET Lab-First for the station safety boundary.
+- Run Windows component CI on master pushes with pinned private dependencies.
 
 ## Tiếng Việt
 
@@ -13,3 +14,4 @@
 - Dựng cùng Contracts Next và xác minh mã băm worker Simulator Next tại ranh giới thực thi.
 - Giữ Hardware RPC 2.0 cục bộ, vòng đời trạm và hành vi Stop có bảo vệ.
 - Tham chiếu CIRNET Lab-First cho ranh giới an toàn trạm.
+- Chạy CI thành phần Windows khi push lên master với phụ thuộc riêng tư đã ghim.

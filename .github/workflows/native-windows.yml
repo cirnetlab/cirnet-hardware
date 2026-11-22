@@ -1,6 +1,8 @@
 name: Hardware Windows x64
 
 on:
+  push:
+    branches: [master]
   workflow_dispatch:
     inputs:
       contracts_revision:
@@ -24,34 +26,43 @@ jobs:
         shell: pwsh
         working-directory: cirnet-hardware-next
     env:
-      CONTRACTS_REVISION: ${{ inputs.contracts_revision }}
-      SIMULATOR_REVISION: ${{ inputs.simulator_revision }}
+      CONTRACTS_REVISION: ${{ inputs.contracts_revision || 'b07fd4001ea96deb0ca48039e94355ce226052d8' }}
+      SIMULATOR_REVISION: ${{ inputs.simulator_revision || '398fc9974bb56cc26c8a6554359a7a9109d533e7' }}
     steps:
-      - name: Validate dependency revisions
+      - name: Validate dependency revisions and access
         working-directory: .
+        env:
+          DEPENDENCIES_TOKEN: ${{ secrets.CIRNET_DEPENDENCIES_READ_TOKEN || secrets.CIRNET_READ_TOKEN }}
         run: |
+          if (!$env:DEPENDENCIES_TOKEN) { throw 'Configure CIRNET_DEPENDENCIES_READ_TOKEN (Contents read access to the private dependencies).' }
           if ($env:CONTRACTS_REVISION -cnotmatch '^[0-9a-f]{40}$') { throw 'Expected an exact Contracts Next commit.' }
           if ($env:SIMULATOR_REVISION -cnotmatch '^[0-9a-f]{40}$') { throw 'Expected an exact Simulator Next commit.' }
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: cirnet-hardware-next
           persist-credentials: false
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: cirnetlab/cirnet-contracts-next
-          ref: ${{ inputs.contracts_revision }}
+          ref: ${{ inputs.contracts_revision || 'b07fd4001ea96deb0ca48039e94355ce226052d8' }}
           path: cirnet-contracts-next
-          token: ${{ secrets.CIRNET_DEPENDENCIES_READ_TOKEN || github.token }}
+          token: ${{ secrets.CIRNET_DEPENDENCIES_READ_TOKEN || secrets.CIRNET_READ_TOKEN }}
           persist-credentials: false
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: cirnetlab/cirnet-simulator-next
-          ref: ${{ inputs.simulator_revision }}
+          ref: ${{ inputs.simulator_revision || '398fc9974bb56cc26c8a6554359a7a9109d533e7' }}
           path: cirnet-simulator-next
-          token: ${{ secrets.CIRNET_DEPENDENCIES_READ_TOKEN || github.token }}
+          token: ${{ secrets.CIRNET_DEPENDENCIES_READ_TOKEN || secrets.CIRNET_READ_TOKEN }}
           persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.12.1
+          package-manager-cache: false
       - name: Allocate an external verification session
         run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $true
           $workspace = $env:GITHUB_WORKSPACE
           $contracts = Join-Path $workspace 'cirnet-contracts-next'
           $revision = git -C $contracts rev-parse HEAD
@@ -70,6 +81,11 @@ jobs:
         run: |
           $PSNativeCommandUseErrorActionPreference = $true
           $target = 'x86_64-pc-windows-msvc'
+          $ErrorActionPreference = 'Stop'
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer/vswhere.exe'
+          $vs = & $vswhere -latest -products '*' -version '[17.0,18.0)' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (!$vs) { throw 'Visual Studio 2022 x64 build tools are required.' }
+          & (Join-Path $vs 'Common7/Tools/Launch-VsDevShell.ps1') -Arch amd64 -HostArch amd64 -SkipAutomaticLocation
           cargo fmt --all --check
           $env:CARGO_ENCODED_RUSTFLAGS = "-C$([char]31)target-feature=+crt-static"
           cargo test --locked --release --target $target

@@ -2,6 +2,8 @@
 
 [Tiếng Việt](../../vi/contributing/verification.md)
 
+The Windows x64 workflow runs on pushes to `master` with exact Contracts Next and Simulator Next commits selected in the workflow. A manual run can override both commits. Configure `CIRNET_DEPENDENCIES_READ_TOKEN` with Contents read access to both repositories. CI builds the worker and runs the Hardware parity suite.
+
 Use the pinned Rust toolchain. Allocate an owned external session with the Contracts Next artifact allocator. Set CARGO_TARGET_DIR inside the session and put temporary files and logs there. Run cargo fmt --all --check and cargo test --locked.
 
 With the [Simulator environment](../guides/getting-started.md) set, run cargo test --locked --test simulator_parity -- --ignored. It exercises the current worker and the canonical Contracts resources. The Rust suite covers station cancellation, generation fences, worker shutdown and safe acknowledgement. The optional tests/rpc suite includes Python reference comparisons and requires separately supplied reference fixtures in an isolated environment. Python is used only for that verification lane.
