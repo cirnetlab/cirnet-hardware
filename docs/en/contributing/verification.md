@@ -2,7 +2,9 @@
 
 [Tiếng Việt](../../vi/contributing/verification.md)
 
-The Windows x64 workflow runs on pushes to `master` with exact Contracts Next and Simulator Next commits selected in the workflow. A manual run can override both commits. Configure `CIRNET_DEPENDENCIES_READ_TOKEN` with Contents read access to both repositories. CI builds the worker and runs the Hardware parity suite.
+The Windows x64 workflow runs on pushes to `master` with exact Contracts Next and Simulator Next commits selected in the workflow. A manual run can override both commits. CI builds the worker and runs the Hardware parity suite.
+
+Create the Actions secret `CIRNET_DEPENDENCIES_READ_TOKEN` in [the cirnetlab organization settings](https://github.com/organizations/cirnetlab/settings/secrets/actions) with **Selected repositories** access. Include the repositories that run the workflows. Use a fine-grained token owned by `cirnetlab` with `Contents: read` on the private dependencies listed below. Hardware needs `cirnet-contracts-next` and `cirnet-simulator-next`.
 
 Use the pinned Rust toolchain. Allocate an owned external session with the Contracts Next artifact allocator. Set CARGO_TARGET_DIR inside the session and put temporary files and logs there. Run cargo fmt --all --check and cargo test --locked.
 

@@ -2,7 +2,9 @@
 
 [English](../../en/contributing/verification.md)
 
-Workflow Windows x64 chạy khi push lên `master` với commit chính xác của Contracts Next và Simulator Next được ghim trong workflow. Có thể chọn lại cả hai commit khi chạy thủ công. Cấu hình `CIRNET_DEPENDENCIES_READ_TOKEN` có quyền đọc Contents ở cả hai repo. CI build worker và chạy bộ kiểm thử tương thích Hardware.
+Workflow Windows x64 chạy khi push lên `master` với commit chính xác của Contracts Next và Simulator Next được ghim trong workflow. Có thể chọn lại cả hai commit khi chạy thủ công. CI build worker và chạy bộ kiểm thử tương thích Hardware.
+
+Tạo Actions secret `CIRNET_DEPENDENCIES_READ_TOKEN` trong [cài đặt tổ chức cirnetlab](https://github.com/organizations/cirnetlab/settings/secrets/actions). Chọn **Selected repositories** và thêm các repo chạy workflow. Dùng fine-grained token có resource owner là `cirnetlab` và quyền `Contents: read` trên các repo private được liệt kê bên dưới. Hardware cần `cirnet-contracts-next` và `cirnet-simulator-next`.
 
 Dùng toolchain Rust đã ghim. Cấp phiên thuộc quyền sở hữu bên ngoài bằng công cụ phân bổ artifact của Contracts Next. Đặt CARGO_TARGET_DIR trong phiên và ghi tệp tạm cùng nhật ký tại đó. Chạy cargo fmt --all --check và cargo test --locked.
 

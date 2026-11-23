@@ -7,6 +7,7 @@
 - Preserve local Hardware RPC 2.0, station lifecycle and protected Stop behavior.
 - Reference CIRNET Lab-First for the station safety boundary.
 - Run Windows component CI on master pushes with pinned private dependencies.
+- Report the exact private dependency permissions required by Hardware CI.
 
 ## Tiếng Việt
 
@@ -15,3 +16,4 @@
 - Giữ Hardware RPC 2.0 cục bộ, vòng đời trạm và hành vi Stop có bảo vệ.
 - Tham chiếu CIRNET Lab-First cho ranh giới an toàn trạm.
 - Chạy CI thành phần Windows khi push lên master với phụ thuộc riêng tư đã ghim.
+- Nêu quyền cần thiết trên từng repo private mà Hardware CI đọc.

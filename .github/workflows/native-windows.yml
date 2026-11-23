@@ -34,7 +34,7 @@ jobs:
         env:
           DEPENDENCIES_TOKEN: ${{ secrets.CIRNET_DEPENDENCIES_READ_TOKEN || secrets.CIRNET_READ_TOKEN }}
         run: |
-          if (!$env:DEPENDENCIES_TOKEN) { throw 'Configure CIRNET_DEPENDENCIES_READ_TOKEN (Contents read access to the private dependencies).' }
+          if (!$env:DEPENDENCIES_TOKEN) { throw 'Set the CIRNET_DEPENDENCIES_READ_TOKEN Actions secret for cirnet-hardware-next. Grant Contents read access to cirnet-contracts-next and cirnet-simulator-next.' }
           if ($env:CONTRACTS_REVISION -cnotmatch '^[0-9a-f]{40}$') { throw 'Expected an exact Contracts Next commit.' }
           if ($env:SIMULATOR_REVISION -cnotmatch '^[0-9a-f]{40}$') { throw 'Expected an exact Simulator Next commit.' }
       - uses: actions/checkout@v5
