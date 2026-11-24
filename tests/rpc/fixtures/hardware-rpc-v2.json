@@ -1,0 +1,187 @@
+{
+  "capabilities": {
+    "virtual-station-01": "0a03312e3012127669727475616c2d73746174696f6e2d30311a0a73696d756c6174696f6e20012801920103322e309a010b554e415641494c41424c45a201127669727475616c2d6576656e74732d312e30aa010b7669727475616c2d312e30b201180a03424230121167656e657269632d66756c6c2d73697a65b201180a03424231121167656e657269632d66756c6c2d73697a65c2013a0a1210041a0e6469676974616c2d6576656e747312111a0f4e4f545f494d504c454d454e5445441a111a0f4e4f545f494d504c454d454e544544",
+    "physical-station-01": "0a03312e301213706879736963616c2d73746174696f6e2d30311a086861726477617265920103322e309a010b554e415641494c41424c45a2010b554e415641494c41424c45aa010b554e415641494c41424c45c201060a0012001a00"
+  },
+  "invalid_graphs": [
+    [
+      false,
+      11,
+      "",
+      {
+        "accepted": false,
+        "code": "INVALID_CONFIGURATION"
+      },
+      ""
+    ],
+    [
+      false,
+      5,
+      "",
+      {
+        "accepted": false,
+        "code": "UNEXECUTABLE"
+      },
+      ""
+    ],
+    [
+      false,
+      5,
+      "",
+      {
+        "accepted": false,
+        "code": "UNEXECUTABLE"
+      },
+      ""
+    ]
+  ],
+  "prepare": [
+    [
+      true,
+      0,
+      "SAFE_STATE",
+      {
+        "accepted": true,
+        "code": "OK",
+        "state": "SAFE_STATE",
+        "hardware_applied": false,
+        "mode": "simulation"
+      },
+      ""
+    ],
+    [
+      true,
+      0,
+      "READY",
+      {
+        "accepted": true,
+        "code": "OK",
+        "state": "READY"
+      },
+      ""
+    ],
+    [
+      true,
+      0,
+      "READY",
+      {
+        "accepted": true,
+        "code": "OK",
+        "state": "READY"
+      },
+      ""
+    ],
+    [
+      true,
+      0,
+      "READY",
+      {
+        "accepted": true,
+        "code": "OK",
+        "state": "READY",
+        "hardware_applied": false,
+        "mode": "simulation"
+      },
+      ""
+    ],
+    [
+      true,
+      0,
+      "READY",
+      {
+        "accepted": true,
+        "code": "OK",
+        "state": "READY",
+        "hardware_applied": false,
+        "mode": "simulation"
+      },
+      ""
+    ],
+    [
+      true,
+      0,
+      "ARMED",
+      {
+        "accepted": true,
+        "code": "OK",
+        "state": "ARMED"
+      },
+      ""
+    ]
+  ],
+  "start_and_capture": [
+    [
+      true,
+      0,
+      "RUNNING",
+      {
+        "accepted": true,
+        "code": "OK",
+        "state": "RUNNING"
+      },
+      ""
+    ],
+    [
+      true,
+      0,
+      "CAPTURING",
+      {
+        "available": true,
+        "state": "COMPLETE",
+        "duration_ns": 20,
+        "sample_count": 1
+      },
+      "4e43415001540000007b22656e636f64696e67223a226469676974616c5f6576656e7473222c227369676e616c73223a5b226f7574707574225d2c2273616d706c655f636f756e74223a312c226475726174696f6e5f6e73223a32307d0000000000000000000001"
+    ]
+  ],
+  "reset": [
+    true,
+    0,
+    "SAFE_STATE",
+    {
+      "accepted": true,
+      "code": "OK",
+      "state": "SAFE_STATE",
+      "hardware_applied": false,
+      "mode": "simulation"
+    },
+    ""
+  ],
+  "stop": [
+    true,
+    0,
+    "SAFE_STATE",
+    {
+      "accepted": true,
+      "code": "OK",
+      "state": "SAFE_STATE",
+      "hardware_applied": false,
+      "mode": "simulation"
+    },
+    ""
+  ],
+  "clock_capture": {
+    "reply": [
+      true,
+      0,
+      "CAPTURING",
+      {
+        "available": true,
+        "state": "COMPLETE",
+        "duration_ns": 499995,
+        "sample_count": 100000
+      }
+    ],
+    "sha256": "16a49a688ea40eab0d581d3e506346816c698a7dbf4df6f2e2aa0fbe5b4f6f28",
+    "bytes": 1100101
+  },
+  "provenance": {
+    "hardware_revision": "17fb9e378ab6117f3ddfb5af994f99c1108567d3",
+    "hardware_wheel_sha256": "02c690c7ebe0ecf96008586058ee2d3f5eca9bd42f454ca3b12045d377007d3f",
+    "simulator_revision": "7cdee6420a204f9b0cd2120ff9e65ee5ffd52b1c",
+    "simulator_wheel_sha256": "8ad0347101b3dda64a35462898fb8f0d9503e630891174cab1bb4203e3ba0abd",
+    "cpp_worker_sha256": "507ba4b00b40f43726c712059405e85d8e1289ef6b75abeb70e9bad5f66cb297",
+    "extraction_input_record_sha256": "22f9b756435a7feb9cc976f84e9248b3cd433a7c6fe1703a58a54b082e64b94a",
+    "contracts_wheel_sha256": "3e5f9ee2b887282b1d91539246c3256d06e25ce4b83457f8e9050cb0f7f36eb3"
+  }
+}

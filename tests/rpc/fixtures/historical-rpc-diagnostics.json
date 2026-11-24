@@ -1,0 +1,269 @@
+{
+  "busy_stop": {
+    "stage1_candidate_manifest_sha256": "22f9b756435a7feb9cc976f84e9248b3cd433a7c6fe1703a58a54b082e64b94a",
+    "stage1_hardware_sha256": "02c690c7ebe0ecf96008586058ee2d3f5eca9bd42f454ca3b12045d377007d3f",
+    "stage1_simulator_sha256": "8ad0347101b3dda64a35462898fb8f0d9503e630891174cab1bb4203e3ba0abd",
+    "stage3_hardware_sha256": "31ae67d95b4eef9ddfc192dd4db25a7df897198072f4704391520007c5969fa7",
+    "cpp_worker_sha256": "507ba4b00b40f43726c712059405e85d8e1289ef6b75abeb70e9bad5f66cb297",
+    "harness_sha256": "446e7067af14a518d07ba0059163b74d48e3a8d4f488ccb8a42312aa4f515d3a",
+    "server_harness_sha256": "74f89916afa3483d7da7b9ea57ddadae5a89cf1c000cc8591396e1a5b7fcfdae",
+    "environment": {
+      "platform": "Windows-11-10.0.26300-SP0",
+      "machine": "AMD64",
+      "python": "3.14.4",
+      "grpcio": "1.84.0",
+      "logical_cpus": 16
+    },
+    "workers": 1,
+    "block_orders": [
+      [
+        "B",
+        "C"
+      ],
+      [
+        "C",
+        "B"
+      ],
+      [
+        "B",
+        "C"
+      ]
+    ],
+    "status": "PASS",
+    "workload": "Single warmed C++ worker suspended while Start is in flight",
+    "scope": "Direct Stop RPC diagnostic",
+    "graph": {
+      "schema_version": "1.0",
+      "circuit_id": "native-rpc-led",
+      "modules": [
+        {
+          "id": "X",
+          "type": "DIGITAL_SWITCH",
+          "properties": {
+            "state": true
+          }
+        },
+        {
+          "id": "L",
+          "type": "LED"
+        }
+      ],
+      "connections": [
+        {
+          "source": "X.OUT",
+          "destination": "L.IN"
+        }
+      ]
+    },
+    "capture": {
+      "signals": [
+        "output"
+      ],
+      "duration_ns": 20
+    },
+    "minimum_post_running_hold_ms": 20.0,
+    "samples_per_block": 100,
+    "blocks": [
+      {
+        "block": 1,
+        "side": "B",
+        "wall_ns": 87740811800,
+        "server_cpu_seconds": 7.703125,
+        "max_sampled_server_rss_bytes": 74629120,
+        "max_sampled_warm_worker_rss_bytes": 3608576,
+        "p50_ns": 48229200,
+        "p95_ns": 116941100,
+        "p99_ns": 171106600
+      },
+      {
+        "block": 1,
+        "side": "C",
+        "wall_ns": 48569130500,
+        "server_cpu_seconds": 4.84375,
+        "max_sampled_server_rss_bytes": 40677376,
+        "max_sampled_warm_worker_rss_bytes": 3608576,
+        "p50_ns": 14390800,
+        "p95_ns": 30820700,
+        "p99_ns": 44061500
+      },
+      {
+        "block": 2,
+        "side": "C",
+        "wall_ns": 18134181900,
+        "server_cpu_seconds": 3.234375,
+        "max_sampled_server_rss_bytes": 41029632,
+        "max_sampled_warm_worker_rss_bytes": 3608576,
+        "p50_ns": 10037500,
+        "p95_ns": 19745100,
+        "p99_ns": 21495500
+      },
+      {
+        "block": 2,
+        "side": "B",
+        "wall_ns": 16777906300,
+        "server_cpu_seconds": 5.125,
+        "max_sampled_server_rss_bytes": 74981376,
+        "max_sampled_warm_worker_rss_bytes": 3608576,
+        "p50_ns": 13584500,
+        "p95_ns": 23716200,
+        "p99_ns": 37761700
+      },
+      {
+        "block": 3,
+        "side": "B",
+        "wall_ns": 18674838700,
+        "server_cpu_seconds": 4.828125,
+        "max_sampled_server_rss_bytes": 75149312,
+        "max_sampled_warm_worker_rss_bytes": 3608576,
+        "p50_ns": 11977000,
+        "p95_ns": 33412400,
+        "p99_ns": 53319200
+      },
+      {
+        "block": 3,
+        "side": "C",
+        "wall_ns": 27087790800,
+        "server_cpu_seconds": 4.265625,
+        "max_sampled_server_rss_bytes": 41111552,
+        "max_sampled_warm_worker_rss_bytes": 3608576,
+        "p50_ns": 10661900,
+        "p95_ns": 19171800,
+        "p99_ns": 22986900
+      }
+    ],
+    "totals": {
+      "B": {
+        "samples": 300,
+        "p50_ns": 16082000,
+        "p95_ns": 89894900,
+        "p99_ns": 123706400
+      },
+      "C": {
+        "samples": 300,
+        "p50_ns": 11908500,
+        "p95_ns": 21982400,
+        "p99_ns": 38159700
+      }
+    },
+    "historical_receipt_sha256": "fa301daffc1b5717cf44a7bd803336f335dafad22e75df44aea45d7df264eabd"
+  },
+  "capabilities": {
+    "stage1_candidate_manifest_sha256": "22f9b756435a7feb9cc976f84e9248b3cd433a7c6fe1703a58a54b082e64b94a",
+    "stage1_hardware_sha256": "02c690c7ebe0ecf96008586058ee2d3f5eca9bd42f454ca3b12045d377007d3f",
+    "stage1_simulator_sha256": "8ad0347101b3dda64a35462898fb8f0d9503e630891174cab1bb4203e3ba0abd",
+    "stage3_hardware_sha256": "31ae67d95b4eef9ddfc192dd4db25a7df897198072f4704391520007c5969fa7",
+    "cpp_worker_sha256": "507ba4b00b40f43726c712059405e85d8e1289ef6b75abeb70e9bad5f66cb297",
+    "harness_sha256": "446e7067af14a518d07ba0059163b74d48e3a8d4f488ccb8a42312aa4f515d3a",
+    "server_harness_sha256": "74f89916afa3483d7da7b9ea57ddadae5a89cf1c000cc8591396e1a5b7fcfdae",
+    "environment": {
+      "platform": "Windows-11-10.0.26300-SP0",
+      "machine": "AMD64",
+      "python": "3.14.4",
+      "grpcio": "1.84.0",
+      "logical_cpus": 16
+    },
+    "workers": 1,
+    "block_orders": [
+      [
+        "B",
+        "C"
+      ],
+      [
+        "C",
+        "B"
+      ],
+      [
+        "B",
+        "C"
+      ]
+    ],
+    "status": "PASS",
+    "workload": "Serial warm GetCapabilities RPC against virtual station",
+    "samples_per_block": 1000,
+    "blocks": [
+      {
+        "block": 1,
+        "side": "B",
+        "wall_ns": 4113439300,
+        "rpc_per_second": 243.1055686174827,
+        "server_cpu_seconds": 1.421875,
+        "server_rss_bytes": 62365696,
+        "p50_ns": 1541600,
+        "p95_ns": 16563200,
+        "p99_ns": 25770100
+      },
+      {
+        "block": 1,
+        "side": "C",
+        "wall_ns": 995098400,
+        "rpc_per_second": 1004.9257440269224,
+        "server_cpu_seconds": 0.484375,
+        "server_rss_bytes": 40099840,
+        "p50_ns": 937500,
+        "p95_ns": 1591600,
+        "p99_ns": 1858100
+      },
+      {
+        "block": 2,
+        "side": "C",
+        "wall_ns": 754669400,
+        "rpc_per_second": 1325.0835398917725,
+        "server_cpu_seconds": 0.375,
+        "server_rss_bytes": 40185856,
+        "p50_ns": 673700,
+        "p95_ns": 1248800,
+        "p99_ns": 1763200
+      },
+      {
+        "block": 2,
+        "side": "B",
+        "wall_ns": 2388597800,
+        "rpc_per_second": 418.65566484236064,
+        "server_cpu_seconds": 1.640625,
+        "server_rss_bytes": 62275584,
+        "p50_ns": 2175500,
+        "p95_ns": 4372400,
+        "p99_ns": 5650800
+      },
+      {
+        "block": 3,
+        "side": "B",
+        "wall_ns": 1244599100,
+        "rpc_per_second": 803.4715757065869,
+        "server_cpu_seconds": 1.09375,
+        "server_rss_bytes": 63807488,
+        "p50_ns": 1193100,
+        "p95_ns": 1786100,
+        "p99_ns": 2061000
+      },
+      {
+        "block": 3,
+        "side": "C",
+        "wall_ns": 538347700,
+        "rpc_per_second": 1857.5355666978794,
+        "server_cpu_seconds": 0.296875,
+        "server_rss_bytes": 40681472,
+        "p50_ns": 526300,
+        "p95_ns": 709400,
+        "p99_ns": 834500
+      }
+    ],
+    "totals": {
+      "B": {
+        "samples": 3000,
+        "rpc_per_second": 387.2648621346127,
+        "p50_ns": 1526900,
+        "p95_ns": 8558500,
+        "p99_ns": 19211000
+      },
+      "C": {
+        "samples": 3000,
+        "rpc_per_second": 1311.12262471016,
+        "p50_ns": 663900,
+        "p95_ns": 1366000,
+        "p99_ns": 1789800
+      }
+    },
+    "historical_receipt_sha256": "e3947586185ef2eb8f270d035c1803781df332edd0e33ba281bf56fee2e8f2f8"
+  }
+}
