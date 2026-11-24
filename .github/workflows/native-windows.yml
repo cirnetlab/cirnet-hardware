@@ -120,6 +120,8 @@ jobs:
           if (!$vs) { throw 'Visual Studio 2022 x64 build tools are required.' }
           & (Join-Path $vs 'Common7/Tools/Launch-VsDevShell.ps1') -Arch amd64 -HostArch amd64 -SkipAutomaticLocation
           $session = $env:CIRNET_ARTIFACTS_SESSION
+          $env:CIRNET_RPC_STALE_WORKER = Join-Path $session 'stale-worker.exe'
+          rustc --edition=2024 --target x86_64-pc-windows-msvc -C target-feature=+crt-static tests/rpc/fixtures/stale_worker.rs -o $env:CIRNET_RPC_STALE_WORKER
           $venv = Join-Path $session 'rpc-venv'
           python -m venv $venv
           $python = Join-Path $venv 'Scripts/python.exe'

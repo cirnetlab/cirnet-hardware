@@ -11,6 +11,7 @@
 - Verify plan and capture isolation, malformed NCAP evidence and worker digest rejection.
 
 - Verify native Hardware RPC with the selected Contracts schema, checked-in reference replies and C++ worker.
+- Compile the stale-generation RPC test worker before pytest on Windows CI.
 
 ## Tiếng Việt
 
@@ -22,3 +23,4 @@
 - Nêu quyền cần thiết trên từng repo private mà Hardware CI đọc.
 - Kiểm chứng cách ly kế hoạch và dữ liệu thu, từ chối dữ liệu NCAP không hợp lệ và mã băm worker sai.
 - Kiểm chứng RPC Hardware native bằng schema Contracts đã chọn, phản hồi tham chiếu đã lưu trong kho và worker C++.
+- Biên dịch worker kiểm thử generation cũ trước khi chạy pytest trên CI Windows.

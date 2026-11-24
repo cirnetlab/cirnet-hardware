@@ -12,6 +12,8 @@ With the [Simulator environment](../guides/getting-started.md) set, run `cargo t
 
 For the RPC suite, use Python 3.14 in an external virtual environment. Install the third-party wheels with `python -m pip install --only-binary=:all: --require-hashes -r requirements-verification.lock`. For offline runs, add `--no-index --find-links <wheelhouse>`. Generate the test bindings from the selected Contracts Next schema with the Protobuf compiler from the Cargo-locked `protoc-bin-vendored` package for your platform.
 
+Windows CI compiles the stale-generation test worker with the pinned repository toolchain before starting pytest. To reuse a prebuilt fixture locally, set `CIRNET_RPC_STALE_WORKER` to its absolute path inside the owned artifact session. Without that setting, pytest compiles the checked-in fixture with `rustc` from the repository root.
+
 ```powershell
 $proto = Join-Path $env:CIRNET_CONTRACTS_ROOT 'contracts/hardware/v2'
 $bindings = Join-Path $env:CIRNET_ARTIFACTS_SESSION 'rpc-bindings'

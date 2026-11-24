@@ -479,40 +479,19 @@ def test_real_cpp_worker_control_fences_faults_and_restarts(tmp_path, fault):
 
 @pytest.fixture
 def stale_worker(tmp_path):
-    source = tmp_path / "stale_worker.rs"
-    executable = tmp_path / ("stale_worker.exe" if os.name == "nt" else "stale_worker")
-    source.write_text(r'''
-use std::io::{self, Read, Write};
+    prebuilt = os.environ.get("CIRNET_RPC_STALE_WORKER")
+    if prebuilt is not None:
+        executable = Path(prebuilt)
+        assert executable.is_absolute() and executable.is_file() and not executable.is_symlink()
+        return executable.resolve()
 
-fn main() -> io::Result<()> {
-    let (mut stdin, mut stdout) = (io::stdin().lock(), io::stdout().lock());
-    let mut prefix = [0; 4];
-    stdin.read_exact(&mut prefix)?;
-    let mut request = vec![0; u32::from_le_bytes(prefix) as usize];
-    stdin.read_exact(&mut request)?;
-    let generation = u64::from_le_bytes(request[12..20].try_into().unwrap());
-    // Acknowledge only the Windows startup preview's empty CNP1 request.
-    let readiness = cfg!(windows)
-        && request.len() == 52
-        && request.starts_with(b"CNP1")
-        && request[20..28] == [0; 8]
-        && request[28..32] == 10_000_u32.to_le_bytes()
-        && request[32..] == [0; 20];
-    let reply_generation = if readiness { generation } else { generation.wrapping_sub(1) };
-    let mut reply = request[..12].to_vec();
-    reply.extend_from_slice(&reply_generation.to_le_bytes());
-    reply.extend_from_slice(&[0; 5]);
-    stdout.write_all(&(reply.len() as u32).to_le_bytes())?;
-    stdout.write_all(&reply)?;
-    stdout.flush()?;
-    // Wait for the supervised parent to close or reap this child.
-    let _ = stdin.read(&mut prefix);
-    Ok(())
-}
-''', encoding="utf-8")
+    test_file = Path(__file__).resolve()
+    source = test_file.with_name("fixtures") / "stale_worker.rs"
+    executable = tmp_path / ("stale_worker.exe" if os.name == "nt" else "stale_worker")
+    # Rustup selects the repository toolchain. Let pytest capture output without compiler pipes.
     subprocess.run(
         ["rustc", "--edition=2024", str(source), "-o", str(executable)],
-        cwd=tmp_path, capture_output=True, check=True, timeout=30,
+        cwd=test_file.parents[2], check=True, timeout=30,
     )
     return executable.resolve()
 

@@ -12,6 +12,8 @@ Sau khi thiết lập [môi trường Simulator](../guides/getting-started.md), 
 
 Để chạy bộ kiểm thử RPC, dùng Python 3.14 trong môi trường ảo bên ngoài. Cài các wheel bên thứ ba bằng `python -m pip install --only-binary=:all: --require-hashes -r requirements-verification.lock`. Khi chạy ngoại tuyến, thêm `--no-index --find-links <wheelhouse>`. Sinh binding kiểm thử từ schema Contracts Next đã chọn bằng trình biên dịch Protobuf theo nền tảng trong gói `protoc-bin-vendored` đã khóa bằng Cargo.
 
+CI Windows biên dịch worker kiểm thử generation cũ bằng toolchain đã ghim của repo trước khi chạy pytest. Nếu muốn dùng fixture đã biên dịch ở máy local, đặt `CIRNET_RPC_STALE_WORKER` thành đường dẫn tuyệt đối của tệp thực thi trong phiên artifact thuộc quyền sở hữu. Nếu không đặt biến này, pytest dùng `rustc` từ thư mục gốc repo để biên dịch fixture đã lưu trong kho.
+
 ```powershell
 $proto = Join-Path $env:CIRNET_CONTRACTS_ROOT 'contracts/hardware/v2'
 $bindings = Join-Path $env:CIRNET_ARTIFACTS_SESSION 'rpc-bindings'
