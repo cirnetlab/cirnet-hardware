@@ -75,3 +75,36 @@ fn unavailable_physical_station_cannot_claim_safe_or_energize() {
         );
     }
 }
+
+#[test]
+fn capture_metadata_uses_the_encoded_sample_count() {
+    let samples = json!([{"signal":"output","time_ns":2,"value":"X"}]);
+    let capture = json!({"available":true,"duration_ns":3,"sample_count":99,"samples":samples});
+    let outcome = encode_capture(State::Capturing, &capture).unwrap();
+
+    assert!(outcome.accepted);
+    assert_eq!(outcome.code, Code::Ok);
+    assert_eq!(outcome.result["sample_count"], 1);
+    assert!(outcome.result.get("samples").is_none());
+    assert_eq!(
+        capture::decode_digital(&outcome.capture_payload).unwrap(),
+        json!({"duration_ns":3,"samples":samples})
+    );
+}
+
+#[test]
+fn malformed_capture_cannot_produce_a_success_payload() {
+    for evidence in [
+        json!({"available":1,"samples":[]}),
+        json!({"available":true,"samples":{}}),
+        json!({"available":false,"samples":[{"signal":"y","time_ns":0,"value":1}]}),
+        json!({"available":true,"duration_ns":1,"samples":[{"signal":"y","time_ns":0,"value":2}]}),
+        json!({"available":true,"duration_ns":true,"samples":[]}),
+    ] {
+        assert_eq!(
+            encode_capture(State::Capturing, &evidence).unwrap_err(),
+            Code::DriverError,
+            "{evidence}"
+        );
+    }
+}

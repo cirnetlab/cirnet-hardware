@@ -133,6 +133,34 @@ def assert_no_capture(client, context):
     assert json.loads(reply.result_json) == {"available": False, "code": "NOT_IMPLEMENTED"}
 
 
+def test_virtual_plan_and_capture_are_bound_to_the_experiment(tmp_path):
+    owner = target("owner")
+    other = target("other")
+    with native_server(tmp_path) as (channel, *_):
+        client = Client(channel)
+        prepare(client, owner)
+        start_and_capture(client, owner)
+        assert_no_capture(client, other)
+        request = pb.PrepareExecutionRequest(
+            target=other,
+            plan=pb.InstrumentationExecutionPlan(
+                schema_version="1.0", station_id=owner.station_id,
+                experiment_id=owner.experiment_id,
+            ),
+            decision=pb.ExecutionDecision(schema_version="1.0", decision="RUN_NORMAL"),
+        )
+        rejected = client.call("PrepareExecution", request)
+        assert not rejected.accepted and rejected.code == pb.RESOURCE_CONFLICT
+        assert not rejected.capture_payload
+
+        assert_safe(client.call("StopExecution", other))
+        reply = client.call("ReadCapture", owner)
+        assert reply.accepted and reply.state == "CAPTURING"
+        assert decode_digital(reply.capture_payload) == EXPECTED
+        assert_safe(client.call("StopExecution", owner))
+        assert_no_capture(client, owner)
+
+
 def wait_for(predicate, deadline, message):
     while monotonic() < deadline:
         value = predicate()

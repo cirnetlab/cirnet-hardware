@@ -8,6 +8,7 @@
 - Reference CIRNET Lab-First for the station safety boundary.
 - Run Windows component CI on master pushes with pinned private dependencies.
 - Report the exact private dependency permissions required by Hardware CI.
+- Verify plan and capture isolation, malformed NCAP evidence and worker digest rejection.
 
 ## Tiếng Việt
 
@@ -17,3 +18,4 @@
 - Tham chiếu CIRNET Lab-First cho ranh giới an toàn trạm.
 - Chạy CI thành phần Windows khi push lên master với phụ thuộc riêng tư đã ghim.
 - Nêu quyền cần thiết trên từng repo private mà Hardware CI đọc.
+- Kiểm chứng cách ly kế hoạch và dữ liệu thu, từ chối dữ liệu NCAP không hợp lệ và mã băm worker sai.

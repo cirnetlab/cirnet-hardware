@@ -19,6 +19,27 @@ fn simulator() -> Simulator {
 
 #[test]
 #[ignore = "requires the pinned Contracts resources and worker"]
+fn worker_rejects_an_incorrect_sha256() {
+    let root =
+        PathBuf::from(std::env::var_os("CIRNET_CONTRACTS_ROOT").expect("pinned Contracts root"));
+    let worker =
+        PathBuf::from(std::env::var_os("CIRNET_SIM_CPP_WORKER").expect("pinned Simulator worker"));
+    let mut digest =
+        std::env::var("CIRNET_SIM_CPP_WORKER_SHA256").expect("pinned Simulator digest");
+    let registry = Arc::new(Registry::load(&root).unwrap());
+    let correct = Simulator::new(worker.clone(), &digest, 1, &root, registry.clone()).unwrap();
+    correct.shutdown().unwrap();
+
+    let replacement = if digest.starts_with('0') { "1" } else { "0" };
+    digest.replace_range(..1, replacement);
+    assert!(matches!(
+        Simulator::new(worker, &digest, 1, &root, registry),
+        Err(SimError::BackendUnavailable)
+    ));
+}
+
+#[test]
+#[ignore = "requires the pinned Contracts resources and worker"]
 fn worker_preserves_digital_samples_and_exact_ncap() {
     let simulator = simulator();
     let graph = json!({
