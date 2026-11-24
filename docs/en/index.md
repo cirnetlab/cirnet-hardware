@@ -1,4 +1,4 @@
-# CIRNET Hardware Next
+# CIRNET Hardware
 
 [Tiếng Việt](../vi/index.md)
 

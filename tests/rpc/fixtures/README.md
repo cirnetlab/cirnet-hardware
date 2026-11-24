@@ -4,4 +4,4 @@
 
 `historical-rpc-diagnostics.json` retains the block and aggregate statistics of the prior paired Stop and capabilities diagnostics with their full receipt digests. Side B was the reference implementation. Side C was the native Hardware binary identified in those receipts. Each current native diagnostic repeats the same workload and sample count for side C; its new external receipt carries the newly tested Hardware and worker digests. Latency and throughput are host-specific measurements.
 
-The data came from CIRNETLAB's GPL-3.0 repository implementations and is covered by this repository's [license](../../../LICENSE). The provenance records are attribution and can be checked against the external frozen baseline. Tests read these local records and generate their client messages from the selected Contracts Next schema.
+The data came from CIRNETLAB's GPL-3.0 repository implementations and is covered by this repository's [license](../../../LICENSE). The provenance records are attribution and can be checked against the external frozen baseline. Tests read these local records and generate their client messages from the selected Contracts schema.

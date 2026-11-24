@@ -1,4 +1,4 @@
-# CIRNET Hardware Next
+# CIRNET Hardware
 
 [English](../en/index.md)
 

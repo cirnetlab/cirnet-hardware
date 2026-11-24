@@ -1,4 +1,4 @@
-# CIRNET Hardware Next
+# CIRNET Hardware
 
 [English documentation](docs/en/index.md) · [Tài liệu tiếng Việt](docs/vi/index.md)
 

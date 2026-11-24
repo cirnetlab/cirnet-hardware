@@ -6,11 +6,11 @@ on:
   workflow_dispatch:
     inputs:
       contracts_revision:
-        description: Exact Contracts Next commit
+        description: Exact Contracts commit
         required: true
         type: string
       simulator_revision:
-        description: Exact Simulator Next commit
+        description: Exact Simulator commit
         required: true
         type: string
 
@@ -24,35 +24,35 @@ jobs:
     defaults:
       run:
         shell: pwsh
-        working-directory: cirnet-hardware-next
+        working-directory: cirnet-hardware
     env:
-      CONTRACTS_REVISION: ${{ inputs.contracts_revision || 'b151f9f16b4d8998ca7142d208c86e7a03268694' }}
-      SIMULATOR_REVISION: ${{ inputs.simulator_revision || 'bc7f23df5251cc51b2ae036f140656da5acd51cd' }}
+      CONTRACTS_REVISION: ${{ inputs.contracts_revision || 'e3f933957db8ec076ab2b313c2a3072d39d6333d' }}
+      SIMULATOR_REVISION: ${{ inputs.simulator_revision || '2ffc399572cde25d4413e9b87cd12c59e751452a' }}
     steps:
       - name: Validate dependency revisions and access
         working-directory: .
         env:
           DEPENDENCIES_TOKEN: ${{ secrets.CIRNET_DEPENDENCIES_READ_TOKEN || secrets.CIRNET_READ_TOKEN }}
         run: |
-          if (!$env:DEPENDENCIES_TOKEN) { throw 'Set the CIRNET_DEPENDENCIES_READ_TOKEN Actions secret for cirnet-hardware-next. Grant Contents read access to cirnet-contracts-next and cirnet-simulator-next.' }
-          if ($env:CONTRACTS_REVISION -cnotmatch '^[0-9a-f]{40}$') { throw 'Expected an exact Contracts Next commit.' }
-          if ($env:SIMULATOR_REVISION -cnotmatch '^[0-9a-f]{40}$') { throw 'Expected an exact Simulator Next commit.' }
+          if (!$env:DEPENDENCIES_TOKEN) { throw 'Set the CIRNET_DEPENDENCIES_READ_TOKEN Actions secret for cirnet-hardware. Grant Contents read access to cirnet-contracts and cirnet-simulator.' }
+          if ($env:CONTRACTS_REVISION -cnotmatch '^[0-9a-f]{40}$') { throw 'Expected an exact Contracts commit.' }
+          if ($env:SIMULATOR_REVISION -cnotmatch '^[0-9a-f]{40}$') { throw 'Expected an exact Simulator commit.' }
       - uses: actions/checkout@v5
         with:
-          path: cirnet-hardware-next
+          path: cirnet-hardware
           persist-credentials: false
       - uses: actions/checkout@v5
         with:
-          repository: cirnetlab/cirnet-contracts-next
-          ref: ${{ inputs.contracts_revision || 'b151f9f16b4d8998ca7142d208c86e7a03268694' }}
-          path: cirnet-contracts-next
+          repository: cirnetlab/cirnet-contracts
+          ref: ${{ inputs.contracts_revision || 'e3f933957db8ec076ab2b313c2a3072d39d6333d' }}
+          path: cirnet-contracts
           token: ${{ secrets.CIRNET_DEPENDENCIES_READ_TOKEN || secrets.CIRNET_READ_TOKEN }}
           persist-credentials: false
       - uses: actions/checkout@v5
         with:
-          repository: cirnetlab/cirnet-simulator-next
-          ref: ${{ inputs.simulator_revision || 'bc7f23df5251cc51b2ae036f140656da5acd51cd' }}
-          path: cirnet-simulator-next
+          repository: cirnetlab/cirnet-simulator
+          ref: ${{ inputs.simulator_revision || '2ffc399572cde25d4413e9b87cd12c59e751452a' }}
+          path: cirnet-simulator
           token: ${{ secrets.CIRNET_DEPENDENCIES_READ_TOKEN || secrets.CIRNET_READ_TOKEN }}
           persist-credentials: false
       - uses: actions/setup-node@v5
@@ -64,12 +64,12 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $PSNativeCommandUseErrorActionPreference = $true
           $workspace = $env:GITHUB_WORKSPACE
-          $contracts = Join-Path $workspace 'cirnet-contracts-next'
+          $contracts = Join-Path $workspace 'cirnet-contracts'
           $revision = git -C $contracts rev-parse HEAD
           if ($LASTEXITCODE -or $revision -cne $env:CONTRACTS_REVISION) { throw 'Contracts checkout differs from its pin.' }
           $env:CIRNET_ARTIFACTS_CONTEXT = @{
-            owner = 'cirnet-hardware-next-ci'
-            roots = @((Get-Location).Path, $contracts, (Join-Path $workspace 'cirnet-simulator-next'))
+            owner = 'cirnet-hardware-ci'
+            roots = @((Get-Location).Path, $contracts, (Join-Path $workspace 'cirnet-simulator'))
           } | ConvertTo-Json -Compress
           $allocator = Join-Path $contracts 'tools/artifact-paths/cirnet_artifact_paths/artifact-paths.mjs'
           $session = node $allocator --directory (Join-Path $env:RUNNER_TEMP 'cirnet-native')
@@ -96,7 +96,7 @@ jobs:
       - name: Exercise the selected Simulator worker
         run: |
           $PSNativeCommandUseErrorActionPreference = $true
-          $source = Join-Path $env:GITHUB_WORKSPACE 'cirnet-simulator-next'
+          $source = Join-Path $env:GITHUB_WORKSPACE 'cirnet-simulator'
           $revision = git -C $source rev-parse HEAD
           if ($revision -cne $env:SIMULATOR_REVISION) { throw 'Simulator checkout differs from its pin.' }
           $build = Join-Path $env:CIRNET_ARTIFACTS_SESSION 'simulator-build'

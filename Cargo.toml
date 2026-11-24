@@ -5,14 +5,14 @@ edition = "2024"
 rust-version = "1.90"
 license-file = "LICENSE"
 description = "Local CIRNET Hardware RPC and virtual stations"
-repository = "https://github.com/cirnetlab/cirnet-hardware-next"
+repository = "https://github.com/cirnetlab/cirnet-hardware"
 
 [[bin]]
 name = "cirnet-hardware"
 path = "src/main.rs"
 
 [dependencies]
-cirnet-contracts-native = { path = "../cirnet-contracts-next", version = "=0.3.0-dev.1" }
+cirnet-contracts-native = { path = "../cirnet-contracts", version = "=0.3.0-dev.1" }
 prost = "=0.14.1"
 serde_json = { version = "=1.0.145", features = ["arbitrary_precision", "preserve_order"] }
 sha2 = "=0.10.9"
@@ -22,7 +22,7 @@ tonic = { version = "=0.14.2", default-features = false, features = ["codegen", 
 tonic-prost = "=0.14.2"
 
 [build-dependencies]
-cirnet-contracts-native = { path = "../cirnet-contracts-next", version = "=0.3.0-dev.1" }
+cirnet-contracts-native = { path = "../cirnet-contracts", version = "=0.3.0-dev.1" }
 prost = "=0.14.1"
 prost-types = "=0.14.1"
 protoc-bin-vendored = "=3.2.0"
