@@ -16,6 +16,18 @@ Simulator C++ đã xác minh SHA-256. Dịch vụ cung cấp trạm ảo.
 
 Dùng [kiến trúc Lab-First](https://github.com/cirnetlab/cirnet-remote/blob/master/docs/cirnet-architecture-lab-first-vi.md) cho an toàn hệ thống và [hợp đồng an toàn vật lý của Remote](https://github.com/cirnetlab/cirnet-remote/blob/master/docs/vi/architecture/physical-lab-safety-contract.md) cho yêu cầu giữa ứng dụng và trạm.
 
+## Bố cục mã nguồn
+
+| Đường dẫn | Trách nhiệm |
+| --- | --- |
+| [`src/main.rs`](../../../src/main.rs) | Khởi động và dừng dịch vụ cục bộ. |
+| [`src/rpc.rs`](../../../src/rpc.rs), [`src/rpc/`](../../../src/rpc) | Cung cấp Hardware RPC và Preview nội bộ. Việc chuyển đổi trường yêu cầu và điều phối khi tiếp nhận Start nằm cùng trình xử lý RPC. |
+| [`src/station.rs`](../../../src/station.rs), [`src/station/`](../../../src/station) | Quản lý phiên trạm, các điều kiện an toàn và việc giám sát dọn dẹp tác vụ. |
+| [`src/simulator.rs`](../../../src/simulator.rs), [`src/simulator/`](../../../src/simulator) | Biên dịch kế hoạch ảo, tạo phép chiếu DC giới hạn, mã hóa khung CNP và giám sát tiến trình worker. |
+| [`proto/preview.proto`](../../../proto/preview.proto), [`tests/rpc/`](../../../tests/rpc) | Định nghĩa giao diện Preview nội bộ và kiểm tra hành vi dịch vụ qua ranh giới RPC. |
+
+## Hành vi của trạm
+
 | Trạm | Hành vi hiện tại |
 | --- | --- |
 | Ảo | Mỗi thí nghiệm có phiên độc lập. Backend `cpp` dùng các worker native được giám sát và xác minh SHA-256. Backend cung cấp bốn kênh Logic Analyzer, không có kênh Scope hoặc Generator. `ngspice` báo không khả dụng. |

@@ -2,6 +2,7 @@
 
 ## 0.3.0-dev.1
 
+- Co-locate private RPC field projections with the handlers and document the service, station and Simulator module ownership.
 - Align repository references with the canonical CIRNET names.
 - Migrate the native Rust service, private Preview definition and tests into conventional Cargo paths.
 - Build against Contracts Next and verify the Simulator Next worker digest at the runtime boundary.
@@ -16,6 +17,7 @@
 
 ## Tiếng Việt
 
+- Đặt phần chuyển đổi trường RPC nội bộ cùng trình xử lý và ghi rõ trách nhiệm của các mô-đun dịch vụ, trạm và Simulator.
 - Đồng bộ tham chiếu với tên kho CIRNET chính thức.
 - Chuyển dịch vụ Rust native, định nghĩa Preview nội bộ và các bài kiểm thử sang bố cục Cargo chuẩn.
 - Dựng cùng Contracts Next và xác minh mã băm worker Simulator Next tại ranh giới thực thi.

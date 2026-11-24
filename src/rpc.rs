@@ -2,7 +2,6 @@ use crate::{
     pb,
     simulator::Simulator,
     station::{Operation, StationHub},
-    wire,
 };
 use cirnet_contracts_native::wire_json;
 use serde_json::{Value, json};
@@ -12,6 +11,7 @@ use tonic::metadata::{Ascii, MetadataValue};
 use tonic::{Request, Response, Status};
 
 mod start_wave;
+mod wire;
 
 pub mod canonical {
     tonic::include_proto!("cirnet.hardware.v2");

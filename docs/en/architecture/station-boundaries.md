@@ -16,6 +16,18 @@ SHA-256-verified C++ Simulator worker. It exposes virtual stations.
 
 Use the [Lab-First Architecture](https://github.com/cirnetlab/cirnet-remote/blob/master/docs/cirnet-architecture-lab-first-en.md) for system safety and the [Remote physical safety contract](https://github.com/cirnetlab/cirnet-remote/blob/master/docs/en/architecture/physical-lab-safety-contract.md) for the application-to-station requirements.
 
+## Source layout
+
+| Path | Responsibility |
+| --- | --- |
+| [`src/main.rs`](../../../src/main.rs) | Starts and shuts down the local service. |
+| [`src/rpc.rs`](../../../src/rpc.rs), [`src/rpc/`](../../../src/rpc) | Expose Hardware RPC and private Preview. Request field projections and Start ingress coordination live with the RPC handlers. |
+| [`src/station.rs`](../../../src/station.rs), [`src/station/`](../../../src/station) | Own station sessions, safety gates and supervised job cleanup. |
+| [`src/simulator.rs`](../../../src/simulator.rs), [`src/simulator/`](../../../src/simulator) | Compile virtual plans, project bounded DC, encode CNP frames and supervise worker processes. |
+| [`proto/preview.proto`](../../../proto/preview.proto), [`tests/rpc/`](../../../tests/rpc) | Define the private Preview interface and check service behavior across the RPC boundary. |
+
+## Station behavior
+
 | Station | Current behavior |
 | --- | --- |
 | Virtual | Each experiment has an independent session. The `cpp` backend uses supervised native workers selected by SHA-256. It exposes four Logic Analyzer channels and zero Scope or Generator channels. `ngspice` reports unavailable. |
