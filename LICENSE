@@ -1,3 +1,19 @@
+CIRNETLAB Proprietary Source and Materials License 1.0
+LicenseRef-CIRNETLAB-Proprietary-1.0
+Effective for newly designated eligible first-party material from 2026-11-25.
+Copyright: the lawful copyright holder(s) of CIRNETLAB-owned materials. All rights reserved within the scope below.
+
+1. Scope. This notice governs only rights actually owned or lawfully licensable by the CIRNETLAB rightsholder(s) in original materials expressly designated proprietary. New original first-party materials are proprietary by default unless an applicable file-level, component-level, prior or separately approved license provides otherwise. Existing valid grants, earlier versions, third-party materials, and mandatory legal exceptions remain unaffected. See LICENSING.md for repository scope. A license text retained for legacy or third-party material is not a grant of that license over new proprietary materials.
+2. Reservation. Except as separately authorized in writing, permitted by an applicable license, GitHub terms for content on GitHub, or required by law, no permission is granted to access restricted materials, use, copy, modify, create derivative works, distribute, publish, disclose, sublicense, sell or commercially exploit covered proprietary material. Access alone is not permission.
+3. Authorized use. Personnel, collaborators and customers may use covered material only within applicable written permissions or agreements. This notice does not replace an NDA, contributor agreement, employment agreement or end-user agreement.
+4. Confidentiality. Respect agreed confidentiality obligations and access controls. Previously public information is not retroactively confidential.
+5. Third-party and historical rights. Preserve all applicable licenses, copyright and attribution notices, source availability, patent and other obligations. Component-specific terms govern those materials. No additional restriction is imposed on rights validly granted under open-source licenses. Do not distribute or deploy a combination whose licensing obligations cannot be met.
+6. Marks. No trademark, logo or endorsement permission is implied except where otherwise lawfully authorized. No registered trademark status is asserted.
+7. Warranty. To the extent permitted by law, materials are provided as is without implied warranties. Mandatory rights, liabilities, express agreements and physical safety obligations are unaffected.
+8. Administration. Requests for permission must be directed to the lawful rightsholder or authorized representative through the CIRNETLAB maintainers. Record the applicable revision, scope and exceptions for future licensing changes.
+
+
+----- Existing license text preserved verbatim for material to which it applies; not a new grant over proprietary material -----
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
