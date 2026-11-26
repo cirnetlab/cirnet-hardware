@@ -28,3 +28,7 @@ python -B -m pytest -p no:cacheprovider --basetemp (Join-Path $env:CIRNET_ARTIFA
 Đặt `$hardware` thành đường dẫn tuyệt đối của tệp thực thi đã chọn và `$hardwareSha256` thành mã băm đã rà soát. Chọn cả worker Simulator và mã băm của worker. Đặt `CIRNET_WINDOWS_PREPARED_PREVIEW=1` khi tiến trình Hardware trên Windows dùng worker riêng cho prepared Preview. Đặt `CIRNET_NATIVE_STOP_DIAGNOSTIC=1` hoặc `CIRNET_NATIVE_RPC_DIAGNOSTIC=1` để đo Stop khi worker đang bận hoặc thông lượng truy vấn khả năng. Lưu biên nhận mới tách biệt với [kết quả đo trước đây](../../../tests/rpc/fixtures/README.md).
 
 Ghi nhận đầu vào chính xác và kết quả. Hồi quy phần mềm không xác lập năng lực vật lý. Thực thi vật lý và ngspice vẫn ở trạng thái UNAVAILABLE. Remote chọn ứng viên hệ thống và ghi mã băm artifact thành phần.
+
+## Lưu trữ phát triển cục bộ
+
+Từ checkout Hardware, đặt `CIRNET_LOCAL_STORAGE_ROOT` và gọi bộ cấp phát Contracts đã review. Giữ `CIRNET_ARTIFACTS_SESSION` cho Cargo, binding RPC, fixture và pytest. Đặt `CARGO_TARGET_DIR` bên dưới phiên đó. Chọn riêng worker Simulator và SHA-256 của nó.

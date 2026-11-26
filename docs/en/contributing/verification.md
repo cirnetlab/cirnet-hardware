@@ -28,3 +28,7 @@ python -B -m pytest -p no:cacheprovider --basetemp (Join-Path $env:CIRNET_ARTIFA
 Use the selected absolute executable and reviewed digest for `$hardware` and `$hardwareSha256`, along with the selected Simulator worker and digest. Set `CIRNET_WINDOWS_PREPARED_PREVIEW=1` when the selected Windows Hardware instance enables a dedicated prepared Preview worker. Set `CIRNET_NATIVE_STOP_DIAGNOSTIC=1` or `CIRNET_NATIVE_RPC_DIAGNOSTIC=1` to measure native busy Stop or capabilities throughput. Keep the new receipts distinct from the [historical diagnostic results](../../../tests/rpc/fixtures/README.md).
 
 Record the exact inputs and outcomes. A software regression result does not establish physical capability. Physical execution and ngspice remain UNAVAILABLE. Remote selects a system candidate and records the component artifact hashes.
+
+## Local development storage
+
+From the Hardware checkout, set `CIRNET_LOCAL_STORAGE_ROOT` and invoke the reviewed Contracts allocator. Keep `CIRNET_ARTIFACTS_SESSION` for Cargo, RPC bindings, fixtures and pytest. Set `CARGO_TARGET_DIR` below that session. Pin the selected Simulator worker and its SHA-256 separately.
