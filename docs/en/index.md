@@ -6,4 +6,4 @@
 - [Station and safety boundaries](architecture/station-boundaries.md)
 - [Verification](contributing/verification.md)
 - [Writing documentation](contributing/writing-documentation.md)
-- [Changelog](../changelogs/README.md)
+- [Changelog](../../CHANGELOG.md)

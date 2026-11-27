@@ -1,6 +1,6 @@
 # Repository work
 
-- Read the [English](docs/en/index.md) and [Vietnamese](docs/vi/index.md) documentation indexes. Search existing documentation, update the authoritative page, consolidate overlapping material and verify references. Synchronize both languages and the [changelog](docs/changelogs/README.md).
+- Read the [English](docs/en/index.md) and [Vietnamese](docs/vi/index.md) documentation indexes. Search existing documentation, update the authoritative page, consolidate overlapping material and verify references. Synchronize both languages and the [English changelog](CHANGELOG.md).
 - Use [Task Continuity](https://github.com/cirnetlab/cirnet-rules/blob/master/en/docs/distribution.md#task-continuity) for temporary plans, acceptance criteria and progress. Keep independent design specifications and durable plans in this repository and reference them from the checkpoint. Mark items complete after verification.
 - Hardware owns local-only Hardware RPC 2.0, station lifecycles, supervised Simulator workers and private FPGA transport. Follow the [station and safety boundaries](docs/en/architecture/station-boundaries.md). Preserve guarded Start, safe Stop and quarantine handoff. Keep authorization, leases and persistence in Remote and canonical schemas in Contracts.
 - Use Contracts and a hash-verified Simulator worker. In a candidate, select exact source snapshots and artifact hashes through Remote. Preserve canonical wire formats.
