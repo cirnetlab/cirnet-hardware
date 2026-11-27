@@ -11,10 +11,9 @@ capability status in both languages.
 
 Keep station lifecycle, local Hardware RPC and private FPGA transport guidance here. Remote owns API admission, durable leases, quarantine and deployment. Contracts owns the schemas and generated bindings. Simulator owns the backend and worker implementation.
 
-Keep each task plan under `.superpowers/plans/`. Keep its matching spec,
-acceptance criteria and progress checklist under `.superpowers/specs/`.
-Both paths are ignored here. Use `- [ ]` for open items and `- [x]` only
-after verification. After verifying the change, update the paired pages
+Use [Task Continuity](https://github.com/cirnetlab/cirnet-rules/blob/master/en/docs/distribution.md#task-continuity) for temporary plans, acceptance criteria and progress. Keep independent design specifications and durable plans with their owning repository and link them from the checkpoint. Mark items complete after verification.
+
+After verifying the change, update the paired pages
 and the [release changelog](../../changelogs/README.md).
 
 Keep dated records in the baseline archive. Cite their source revision for

@@ -1,7 +1,7 @@
 # Repository work
 
 - Read the [English](docs/en/index.md) and [Vietnamese](docs/vi/index.md) documentation indexes. Search existing documentation, update the authoritative page, consolidate overlapping material and verify references. Synchronize both languages and the [changelog](docs/changelogs/README.md).
-- Keep task plans only in .superpowers/plans/ and their specifications, acceptance criteria and progress checklists only in .superpowers/specs/. Use unchecked boxes for pending work and check boxes only when verified.
+- Use [Task Continuity](https://github.com/cirnetlab/cirnet-rules/blob/master/en/docs/distribution.md#task-continuity) for temporary plans, acceptance criteria and progress. Keep independent design specifications and durable plans in this repository and reference them from the checkpoint. Mark items complete after verification.
 - Hardware owns local-only Hardware RPC 2.0, station lifecycles, supervised Simulator workers and private FPGA transport. Follow the [station and safety boundaries](docs/en/architecture/station-boundaries.md). Preserve guarded Start, safe Stop and quarantine handoff. Keep authorization, leases and persistence in Remote and canonical schemas in Contracts.
 - Use Contracts and a hash-verified Simulator worker. In a candidate, select exact source snapshots and artifact hashes through Remote. Preserve canonical wire formats.
 - Use the [verification guide](docs/en/contributing/verification.md). Allocate raw verification evidence with the shared Contracts allocator outside checkouts, worktrees and Git directories. Declare the owner and participating roots. Retain approved summaries and evidence references. Clean only an owned session.
